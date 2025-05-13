@@ -11,7 +11,7 @@ A full-stack web application for managing a bakery business, built with Express.
 - Order placement and tracking
 - Order history
 - Personal profile management
-- Social media integration
+- Integrating MoMo wallet payment
 
 ### Admin Features
 - Dashboard with statistics
@@ -127,57 +127,3 @@ bakery/
 3. Commit your changes (`git commit -m 'Add some amazing feature'`)
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Cấu hình đăng nhập với mạng xã hội
-
-### Google OAuth
-
-1. Truy cập [Google Cloud Console](https://console.cloud.google.com/)
-2. Tạo project mới hoặc chọn project hiện có
-3. Bật Google+ API
-4. Tạo OAuth 2.0 Client ID
-5. Thêm Authorized redirect URI: `http://localhost:3000/auth/google/callback`
-6. Sao chép Client ID và Client Secret vào file `.env`
-
-### Facebook OAuth
-
-1. Truy cập [Facebook Developers](https://developers.facebook.com/)
-2. Tạo ứng dụng mới
-3. Thêm Facebook Login product
-4. Cấu hình OAuth redirect URI: `http://localhost:3000/auth/facebook/callback`
-5. Sao chép App ID và App Secret vào file `.env`
-
-### Cấu hình Session
-
-1. Tạo một chuỗi ngẫu nhiên làm SESSION_SECRET
-2. Thêm vào file `.env`:
-   ```
-   SESSION_SECRET=your_session_secret_here
-   ```
-
-## MoMo Payment Integration
-
-This project includes integration with MoMo e-wallet payment gateway. To use the MoMo payment feature, you'll need to configure the following environment variables:
-
-```
-# MoMo Payment Configuration
-MOMO_PARTNER_CODE=your_partner_code
-MOMO_ACCESS_KEY=your_access_key
-MOMO_SECRET_KEY=your_secret_key
-MOMO_API_URL=https://test-payment.momo.vn (for sandbox) or https://payment.momo.vn (for production)
-MOMO_RETURN_URL=http://your-domain/payment/momo/return
-MOMO_NOTIFY_URL=http://your-domain/payment/momo/ipn
-MOMO_SANDBOX=true (for sandbox) or false (for production)
-```
-
-To set up MoMo payment:
-1. Register for a MoMo merchant account at [MoMo Business Portal](https://business.momo.vn/)
-2. Obtain your Partner Code, Access Key, and Secret Key
-3. Add these credentials to your environment variables
-4. For development, you can use the sandbox environment for testing
-
-Note: Make sure your MOMO_RETURN_URL and MOMO_NOTIFY_URL are accessible to MoMo servers. For local development, you might need to use a service like ngrok. 
