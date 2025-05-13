@@ -1,0 +1,35 @@
+<%- include('../partials/header') %>
+
+<div class="container my-5">
+  <div class="row">
+    <div class="col-12">
+      <h1 class="mb-4">Kết quả tìm kiếm cho "<%= query %>"</h1>
+      
+      <% if (products.length > 0) { %>
+        <div class="row">
+          <% products.forEach(product => { %>
+            <div class="col-md-4 mb-4">
+              <div class="card h-100">
+                <img src="<%= product.image %>" class="card-img-top" alt="<%= product.name %>">
+                <div class="card-body">
+                  <h5 class="card-title"><%= product.name %></h5>
+                  <p class="card-text"><%= product.description %></p>
+                  <p class="card-text">
+                    <strong>Giá:</strong> <%= product.price.toLocaleString('vi-VN') %>đ
+                  </p>
+                  <a href="/san-pham/<%= product.id %>" class="btn btn-primary">Chi tiết</a>
+                </div>
+              </div>
+            </div>
+          <% }) %>
+        </div>
+      <% } else { %>
+        <div class="alert alert-info">
+          Không tìm thấy sản phẩm nào phù hợp với từ khóa "<%= query %>"
+        </div>
+      <% } %>
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/footer') %> 

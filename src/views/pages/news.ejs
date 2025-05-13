@@ -1,0 +1,81 @@
+<%- include('../partials/header', { title: title }) %>
+
+<section class="back_all">
+  <!-- Breadcrumb -->
+  <div class="breadcrumb">
+    <div class="container">
+      <a href="/">Trang chủ</a>
+      <a href="/tin-tuc">Tin tức</a>
+    </div>
+  </div>
+
+  <div class="khoang_cach">
+    <div class="container">
+      <div class="section-title">
+        <h2>Tin tức &amp; Sự kiện</h2>
+      </div>
+
+      <div class="row">
+        <% if (newsItems && newsItems.length > 0) { %>
+          <% newsItems.forEach(news => { %>
+            <div class="col-md-6 col-lg-4 mb-4">
+              <div class="card h-100">
+                <div class="card-img-top">
+                  <a href="/tin-tuc/<%= news.slug %>">
+                    <img src="<%= news.image || '/images/news-placeholder.jpg' %>" alt="<%= news.title %>" class="img-fluid" style="height: 200px; width: 100%; object-fit: cover;">
+                  </a>
+                </div>
+                <div class="card-body">
+                  <div class="small text-muted mb-2">
+                    <i class="bi bi-calendar"></i> <%= new Date(news.published_at || news.created_at).toLocaleDateString('vi-VN') %>
+                  </div>
+                  <h5 class="card-title">
+                    <a href="/tin-tuc/<%= news.slug %>" class="text-decoration-none text-dark"><%= news.title %></a>
+                  </h5>
+                  <% if (news.summary) { %>
+                    <p class="card-text text-truncate"><%= news.summary %></p>
+                  <% } %>
+                </div>
+                <div class="card-footer bg-white border-top-0">
+                  <a href="/tin-tuc/<%= news.slug %>" class="btn btn-sm btn-outline-primary">Xem thêm</a>
+                </div>
+              </div>
+            </div>
+          <% }); %>
+        <% } else { %>
+          <div class="col-12 text-center py-5">
+            <h3>Chưa có tin tức nào</h3>
+            <p>Vui lòng quay lại sau.</p>
+          </div>
+        <% } %>
+      </div>
+
+      <!-- Pagination -->
+      <% if (pagination.totalPages > 1) { %>
+        <div class="row mt-5">
+          <div class="col text-center">
+            <div class="block-27">
+              <ul>
+                <li class="<%= pagination.page === 1 ? 'disabled' : '' %>">
+                  <a href="/tin-tuc?page=<%= pagination.page - 1 %>">&lt;</a>
+                </li>
+                
+                <% for (let i = 1; i <= pagination.totalPages; i++) { %>
+                  <li class="<%= pagination.page === i ? 'active' : '' %>">
+                    <a href="/tin-tuc?page=<%= i %>"><%= i %></a>
+                  </li>
+                <% } %>
+                
+                <li class="<%= pagination.page === pagination.totalPages ? 'disabled' : '' %>">
+                  <a href="/tin-tuc?page=<%= pagination.page + 1 %>">&gt;</a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      <% } %>
+    </div>
+  </div>
+</section>
+
+<%- include('../partials/footer') %> 

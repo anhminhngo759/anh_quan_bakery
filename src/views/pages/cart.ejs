@@ -1,0 +1,239 @@
+<%- include('../partials/header') %>
+
+<div class="cart-page">
+    <!-- Breadcrumb -->
+    <div class="breadcrumb">
+        <div class="container">
+            <a href="/">Trang chủ</a>
+            <span class="active">Giỏ hàng</span>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="cart-content">
+            <% if (cartItems && cartItems.length > 0) { %>
+                <!-- Cart Items -->
+                <div class="cart-items">
+                    <table class="cart-table">
+                        <thead>
+                            <tr>
+                                <th>Sản phẩm</th>
+                                <th>Giá</th>
+                                <th>Số lượng</th>
+                                <th>Tổng</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% cartItems.forEach(function(item) { %>
+                                <tr>
+                                    <td class="product-info" data-label="Sản phẩm">
+                                        <img src="<%= item.image_url %>" alt="<%= item.name %>">
+                                        <div>
+                                            <h3><%= item.name %></h3>
+                                            <p><%= item.description %></p>
+                                        </div>
+                                    </td>
+                                    <td class="price" data-label="Giá">
+                                        <%= new Intl.NumberFormat('vi-VN').format(Number(item.price)) %> VND
+                                    </td>
+                                    <td class="quantity" data-label="Số lượng">
+                                        <div class="quantity-control" data-product-id="<%= item.product_id %>">
+                                            <button class="decrease btn btn-sm btn-outline-secondary" <%= item.quantity <= 1 ? 'disabled' : '' %>>-</button>
+                                            <input type="number" class="quantity-input form-control form-control-sm mx-1" value="<%= item.quantity %>" min="1" style="width: 50px; text-align: center; display: inline-block;">
+                                            <button class="increase btn btn-sm btn-outline-secondary">+</button>
+                                        </div>
+                                    </td>
+                                    <td class="total" data-label="Tổng">
+                                        <%= new Intl.NumberFormat('vi-VN').format(Number(item.price) * Number(item.quantity)) %> VND
+                                    </td>
+                                    <td data-label="Xóa">
+                                        <button class="remove-item btn btn-sm btn-danger" data-product-id="<%= item.product_id %>">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            <% }); %>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Cart Summary -->
+                <div class="cart-summary">
+                    <div class="summary-row">
+                        <span>Tổng số lượng:</span>
+                        <span><%= Number(totalItems) || 0 %> sản phẩm</span>
+                    </div>
+                    <div class="summary-row total">
+                        <span>Tổng tiền:</span>
+                        <span><%= new Intl.NumberFormat('vi-VN').format(Number(totalAmount) || 0) %> VND</span>
+                    </div>
+                    <div class="cart-actions">
+                        <a href="/san-pham" class="btn btn-secondary">Tiếp tục mua sắm</a>
+                        <a href="/gio-hang/checkout" class="btn btn-primary">Thanh toán</a>
+                    </div>
+                </div>
+            <% } else { %>
+                <!-- Empty Cart -->
+                <div class="empty-cart">
+                    <i class="bi bi-cart-x"></i>
+                    <h2>Giỏ hàng trống</h2>
+                    <p>Bạn chưa có sản phẩm nào trong giỏ hàng</p>
+                    <a href="/san-pham" class="btn btn-primary">Mua sắm ngay</a>
+                </div>
+            <% } %>
+        </div>
+    </div>
+</div>
+
+<!-- Cart Scripts -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Quantity controls
+    document.querySelectorAll('.quantity-control').forEach(control => {
+        const productId = control.dataset.productId;
+        const input = control.querySelector('.quantity-input');
+        const decreaseBtn = control.querySelector('.decrease');
+        const increaseBtn = control.querySelector('.increase');
+
+        decreaseBtn.addEventListener('click', () => {
+            const newValue = Math.max(1, parseInt(input.value) - 1);
+            if (newValue !== parseInt(input.value)) {
+                updateQuantity(productId, newValue);
+            }
+        });
+
+        increaseBtn.addEventListener('click', () => {
+            const newValue = parseInt(input.value) + 1;
+            updateQuantity(productId, newValue);
+        });
+
+        input.addEventListener('change', () => {
+            const newValue = Math.max(1, parseInt(input.value) || 1);
+            if (newValue !== parseInt(input.value)) {
+                input.value = newValue;
+            }
+            updateQuantity(productId, newValue);
+        });
+    });
+
+    // Remove buttons
+    document.querySelectorAll('.remove-item').forEach(button => {
+        button.addEventListener('click', () => {
+            const productId = button.dataset.productId;
+            removeItem(productId);
+        });
+    });
+});
+
+function updateQuantity(productId, quantity) {
+    if (quantity < 1) return;
+    
+    fetch(`/gio-hang/items/${productId}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ quantity: Number(quantity) })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.message) {
+            window.location.reload();
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Có lỗi xảy ra khi cập nhật số lượng');
+    });
+}
+
+function removeItem(productId) {
+    if (!confirm('Bạn có chắc chắn muốn xóa sản phẩm này?')) return;
+
+    fetch(`/gio-hang/items/${productId}`, {
+        method: 'DELETE'
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.message) {
+            window.location.reload();
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Có lỗi xảy ra khi xóa sản phẩm');
+    });
+}
+</script>
+
+<style>
+/* Add custom styles for quantity controls */
+.quantity-control {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.quantity-control button {
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.quantity-input {
+  width: 50px !important;
+  text-align: center;
+  padding: 0.25rem;
+}
+
+/* Add custom styles for cart table layout */
+@media (max-width: 767px) {
+  .cart-table {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+  }
+  
+  .cart-table thead {
+    display: none;
+  }
+  
+  .cart-table tbody tr {
+    display: block;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid #dee2e6;
+    padding-bottom: 1rem;
+  }
+  
+  .cart-table tbody td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+    border: none;
+  }
+  
+  .cart-table tbody td::before {
+    content: attr(data-label);
+    font-weight: bold;
+    margin-right: 1rem;
+  }
+  
+  .product-info {
+    flex-direction: column;
+    align-items: flex-start !important;
+  }
+  
+  .product-info img {
+    margin-right: 0 !important;
+    margin-bottom: 0.5rem;
+  }
+}
+</style>
+
+<%- include('../partials/footer') %> 

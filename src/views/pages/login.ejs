@@ -1,0 +1,68 @@
+<%- include('../partials/header') %>
+
+<div class="container my-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <div class="card shadow-sm">
+        <div class="card-body p-4">
+          <h2 class="card-title text-center mb-4 text-primary">Đăng nhập</h2>
+
+          <% if (error && error.length > 0) { %>
+            <div class="alert alert-danger"><%= error %></div>
+          <% } %>
+
+          <form action="/auth/dang-nhap" method="POST" id="loginForm">
+            <div class="mb-3">
+              <label for="email" class="form-label">Email</label>
+              <input type="email" class="form-control form-control-lg" id="email" name="email" required>
+            </div>
+
+            <div class="mb-3">
+              <label for="password" class="form-label">Mật khẩu</label>
+              <input type="password" class="form-control form-control-lg" id="password" name="password" required>
+            </div>
+
+            <div class="mb-3 form-check">
+              <input type="checkbox" class="form-check-input" id="remember" name="remember">
+              <label class="form-check-label" for="remember">Ghi nhớ đăng nhập</label>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100 mb-3 btn-lg">Đăng nhập</button>
+
+            <!-- <div class="text-center mb-3">
+              <p class="text-muted">Hoặc đăng nhập với</p>
+            </div>
+
+            <div class="d-grid gap-2">
+              <a href="/auth/google" class="btn btn-outline-danger">
+                <i class="fab fa-google"></i> Google
+              </a>
+            </div> -->
+          </form>
+
+          <div class="text-center mt-3">
+            <p>Chưa có tài khoản? <a href="/auth/dang-ky" class="text-decoration-none">Đăng ký ngay</a></p>
+            <p><a href="/auth/quen-mat-khau" class="text-decoration-none">Quên mật khẩu?</a></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const form = document.getElementById('loginForm');
+  
+  form.addEventListener('submit', function(e) {
+    const submitButton = form.querySelector('button[type="submit"]');
+    submitButton.disabled = true;
+    submitButton.innerHTML = `
+      <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+      Đang đăng nhập...
+    `;
+  });
+});
+</script>
+
+<%- include('../partials/footer') %> 

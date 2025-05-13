@@ -1,0 +1,118 @@
+<%- include('../partials/header') %>
+
+<section class="stores-page">
+  <!-- Breadcrumb -->
+  <div class="breadcrumb">
+    <div class="container">
+      <a href="/">Trang chủ</a>
+      <span class="active">Hệ thống cửa hàng</span>
+    </div>
+  </div>
+
+  <div class="container py-5">
+    <div class="row">
+      <div class="col-12 text-center mb-5">
+        <h1 class="fw-bold">Hệ thống cửa hàng</h1>
+        <p class="lead">Tìm cửa hàng Anh Quân Bakery gần nhất với bạn</p>
+      </div>
+    </div>
+
+    <!-- Store Locations -->
+    <div class="row row-cols-1 row-cols-md-2 g-4 mb-5">
+      <% stores.forEach(function(store) { %>
+        <div class="col">
+          <div class="card h-100 border-0 shadow-sm store-card">
+            <div class="row g-0 h-100">
+              <div class="col-lg-5">
+                <img src="<%= store.image %>" class="img-fluid rounded-start h-100 object-fit-cover" alt="<%= store.name %>" style="object-fit: cover;">
+              </div>
+              <div class="col-lg-7">
+                <div class="card-body d-flex flex-column h-100">
+                  <h5 class="card-title fw-bold"><%= store.name %></h5>
+                  <div class="store-info">
+                    <p class="d-flex align-items-center mb-2">
+                      <i class="bi bi-geo-alt-fill text-primary me-2"></i>
+                      <span><%= store.address %></span>
+                    </p>
+                    <p class="d-flex align-items-center mb-2">
+                      <i class="bi bi-telephone-fill text-primary me-2"></i>
+                      <span><%= store.phone %></span>
+                    </p>
+                    <p class="d-flex align-items-center mb-2">
+                      <i class="bi bi-envelope-fill text-primary me-2"></i>
+                      <span><%= store.email %></span>
+                    </p>
+                    <p class="d-flex align-items-center mb-4">
+                      <i class="bi bi-clock-fill text-primary me-2"></i>
+                      <span>Giờ mở cửa: <%= store.open_hours %></span>
+                    </p>
+                  </div>
+                  <div class="mt-auto">
+                    <a href="<%= store.map_url %>" target="_blank" class="btn btn-outline-primary w-100">
+                      <i class="bi bi-map me-2"></i>Xem bản đồ
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% }); %>
+    </div>
+
+    <!-- Map Section -->
+    <div class="row mb-5">
+      <div class="col-12">
+        <div class="card border-0 shadow-sm">
+          <div class="card-body p-0">
+            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3833.990228794755!2d108.18058457459998!3d16.0659968395255!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3142190215894d6d%3A0x8bc8d371779480ba!2zOTA4IFRy4bqnbiBDYW8gVsOibiwgVGhhbmggS2jDqiDEkMO0bmcsIFRoYW5oIEtow6osIMSQw6AgTuG6tW5nIDU1MDAwMCwgVmnhu4d0IE5hbQ!5e0!3m2!1svi!2s!4v1745508946444!5m2!1svi!2s" width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Delivery Service -->
+    <div class="row">
+      <div class="col-12">
+        <div class="bg-light p-4 rounded-3 shadow-sm">
+          <div class="row align-items-center">
+            <div class="col-lg-3 text-center text-lg-start mb-4 mb-lg-0">
+              <img src="/images/delivery-service.jpg" alt="Dịch vụ giao hàng" class="img-fluid" style="max-height: 150px;">
+            </div>
+            <div class="col-lg-6 mb-4 mb-lg-0">
+              <h3 class="fw-bold mb-3">Dịch vụ giao hàng tận nơi</h3>
+              <p>Anh Quân Bakery cung cấp dịch vụ giao hàng miễn phí trong phạm vi 5km hoặc đơn hàng trên 200,000đ. Hãy liên hệ với cửa hàng gần nhất để đặt bánh ngay hôm nay!</p>
+            </div>
+            <div class="col-lg-3 text-center">
+              <a href="/lien-he" class="btn btn-primary">Liên hệ đặt hàng</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .store-card {
+    transition: transform 0.3s ease;
+  }
+  
+  .store-card:hover {
+    transform: translateY(-5px);
+  }
+  
+  @media (max-width: 991.98px) {
+    .store-card .row {
+      flex-direction: column;
+    }
+    
+    .store-card img {
+      height: 200px !important;
+      width: 100%;
+      border-radius: 0.375rem 0.375rem 0 0 !important;
+    }
+  }
+</style>
+
+<%- include('../partials/footer') %> 

@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>In Đơn Hàng #<%= order.id %> - Quản Trị</title>
+  
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  
+  <style>
+    @media print {
+      @page {
+        size: A4;
+        margin: 1cm;
+      }
+      body {
+        font-size: 12pt;
+        line-height: 1.5;
+      }
+      .no-print {
+        display: none !important;
+      }
+      .table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      .table th,
+      .table td {
+        border: 1px solid #dee2e6;
+        padding: 0.5rem;
+      }
+      .table th {
+        background-color: #f8f9fa;
+      }
+      .badge {
+        border: 1px solid #333;
+      }
+    }
+    .logo {
+      max-height: 80px;
+    }
+    .print-button {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 1000;
+    }
+    .badge {
+      font-size: 85%;
+    }
+  </style>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Lấy nút in
+      const printButton = document.getElementById('printButton');
+      
+      // Thêm event listener cho nút in
+      if (printButton) {
+        printButton.addEventListener('click', function() {
+          console.log('Print button clicked');
+          try {
+            window.print();
+          } catch (error) {
+            console.error('Lỗi khi in:', error);
+            alert('Có lỗi xảy ra khi mở hộp thoại in. Vui lòng thử lại.');
+          }
+        });
+      }
+    });
+  </script>
+</head>
+<body class="bg-white">
+  <div class="container my-4">
+    <!-- Header -->
+    <div class="row mb-4">
+      <div class="col-6">
+        <img src="/images/logo.svg" alt="Logo" class="logo">
+        <p class="small text-muted mt-2">Tài liệu nội bộ - Bản in từ hệ thống quản trị</p>
+      </div>
+      <div class="col-6 text-end">
+        <h1 class="h4">ĐƠN HÀNG #<%= order.id %></h1>
+        <p class="mb-0">Ngày đặt: <%= new Date(order.created_at).toLocaleDateString('vi-VN') %></p>
+        <p class="mb-0">
+          <span class="fw-bold">Trạng thái:</span> 
+          <% if (order.status === 'pending') { %>
+            <span class="badge bg-warning">Chờ xử lý</span>
+          <% } else if (order.status === 'confirmed') { %>
+            <span class="badge bg-info">Đã xác nhận</span>
+          <% } else if (order.status === 'shipped') { %>
+            <span class="badge bg-primary">Đang giao</span>
+          <% } else if (order.status === 'delivered') { %>
+            <span class="badge bg-success">Đã giao</span>
+          <% } else if (order.status === 'canceled') { %>
+            <span class="badge bg-danger">Đã hủy</span>
+          <% } %>
+        </p>
+      </div>
+    </div>
+
+    <!-- Thông tin khách hàng -->
+    <div class="row mb-4">
+      <div class="col-6">
+        <h5>Thông Tin Khách Hàng</h5>
+        <% if (order.customer_name) { %>
+          <p class="mb-1"><strong>Họ tên:</strong> <%= order.customer_name %></p>
+        <% } %>
+        <% if (order.customer_email) { %>
+          <p class="mb-1"><strong>Email:</strong> <%= order.customer_email %></p>
+        <% } %>
+        <p class="mb-1"><strong>Số điện thoại:</strong> <%= order.phone %></p>
+        <p class="mb-1"><strong>Hình thức thanh toán:</strong> <%= order.payment_method === 'cod' ? 'Thanh toán khi nhận hàng' : 'Chuyển khoản ngân hàng' %></p>
+      </div>
+      <div class="col-6">
+        <h5>Thông Tin Giao Hàng</h5>
+        <p class="mb-1"><strong>Địa chỉ:</strong> <%= order.shipping_address %></p>
+        <% if (order.shipping_city) { %>
+          <p class="mb-1"><strong>Thành phố/Tỉnh:</strong> <%= order.shipping_city %></p>
+        <% } %>
+        <% if (order.shipping_district) { %>
+          <p class="mb-1"><strong>Quận/Huyện:</strong> <%= order.shipping_district %></p>
+        <% } %>
+        <% if (order.shipping_ward) { %>
+          <p class="mb-1"><strong>Phường/Xã:</strong> <%= order.shipping_ward %></p>
+        <% } %>
+      </div>
+    </div>
+
+    <!-- Chi tiết đơn hàng -->
+    <div class="mb-4">
+      <h5>Chi Tiết Đơn Hàng</h5>
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th>Sản Phẩm</th>
+            <th class="text-center">Số Lượng</th>
+            <th class="text-end">Đơn Giá</th>
+            <th class="text-end">Thành Tiền</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% order.items.forEach(function(item) { %>
+            <tr>
+              <td>
+                <h6 class="mb-0"><%= item.product_name %></h6>
+                <small class="text-muted"><%= item.category_name || 'Không phân loại' %></small>
+              </td>
+              <td class="text-center"><%= item.quantity %></td>
+              <td class="text-end"><%= new Intl.NumberFormat('vi-VN').format(item.price) %> VND</td>
+              <td class="text-end"><%= new Intl.NumberFormat('vi-VN').format(item.price * item.quantity) %> VND</td>
+            </tr>
+          <% }); %>
+        </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="3" class="text-end"><strong>Tổng tiền:</strong></td>
+            <td class="text-end"><strong><%= new Intl.NumberFormat('vi-VN').format(order.total_amount) %> VND</strong></td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+
+    <% if (order.notes) { %>
+      <div class="mt-4">
+        <h5>Ghi Chú</h5>
+        <p class="mb-0"><%= order.notes %></p>
+      </div>
+    <% } %>
+
+    <!-- Admin signature section -->
+    <div class="row mt-5">
+      <div class="col-4 text-center">
+        <p>Người lập phiếu</p>
+        <p class="mt-5">.........................</p>
+      </div>
+      <div class="col-4 text-center">
+        <p>Người giao hàng</p>
+        <p class="mt-5">.........................</p>
+      </div>
+      <div class="col-4 text-center">
+        <p>Người nhận</p>
+        <p class="mt-5">.........................</p>
+      </div>
+    </div>
+
+    <!-- Print Button -->
+    <div class="no-print print-button">
+      <button id="printButton" class="btn btn-primary" type="button">
+        <i class="bi bi-printer"></i> In đơn hàng
+      </button>
+      <a href="/admin/orders/<%= order.id %>" class="btn btn-secondary ms-2">
+        <i class="bi bi-arrow-left"></i> Quay lại
+      </a>
+    </div>
+  </div>
+</body>
+</html> 

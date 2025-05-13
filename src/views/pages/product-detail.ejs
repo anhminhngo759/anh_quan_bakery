@@ -1,0 +1,463 @@
+<%- include('../partials/header') %>
+
+<section class="product-detail">
+    <!-- Breadcrumb -->
+    <div class="breadcrumb">
+        <div class="container">
+            <a href="/">Trang chủ</a>
+            <a href="/san-pham">Sản phẩm</a>
+            <a href="/danh-muc/<%= product.category_id %>"><%= category.name %></a>
+            <span class="active"><%= product.name %></span>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="product-detail-content">
+            <!-- Product Images -->
+            <div class="product-gallery">
+                <div class="main-image">
+                    <img src="<%= product.image_url %>" alt="<%= product.name %>" id="mainImage">
+                </div>
+                <% if (product.images && product.images.length > 0) { %>
+                    <div class="thumbnail-list">
+                        <div class="thumbnail active" onclick="changeImage('<%= product.image_url %>')">
+                            <img src="<%= product.image_url %>" alt="<%= product.name %>">
+                        </div>
+                        <% product.images.forEach(function(image) { %>
+                            <div class="thumbnail" onclick="changeImage('<%= image %>')">
+                                <img src="<%= image %>" alt="<%= product.name %>">
+                            </div>
+                        <% }); %>
+                    </div>
+                <% } %>
+            </div>
+
+            <!-- Product Info -->
+            <div class="product-info">
+                <h1 class="product-name"><%= product.name %></h1>
+                <div class="product-price">
+                    <%= new Intl.NumberFormat('vi-VN').format(product.price) %> VND
+                </div>
+                <div class="product-description">
+                    <%= product.description %>
+                </div>
+                <div class="product-meta">
+                    <div class="meta-item">
+                        <i class="bi bi-box-seam"></i>
+                        <span>Trạng thái: 
+                            <% if (product.stock_quantity <= 0) { %>
+                                <span class="text-danger">Hết hàng</span>
+                            <% } else { %>
+                                <%= product.is_available ? 'Còn hàng' : 'Hết hàng' %>
+                            <% } %>
+                        </span>
+                    </div>
+                    <div class="meta-item">
+                        <i class="bi bi-grid"></i>
+                        <span>Danh mục: <%= category.name %></span>
+                    </div>
+                    <div class="meta-item">
+                        <i class="bi bi-tag"></i>
+                        <span>Mã sản phẩm: <%= product.id %></span>
+                    </div>
+                </div>
+                <div class="product-actions">
+                    <div class="quantity-selector">
+                        <button class="btn-quantity decrease" type="button" <% if (product.stock_quantity <= 0) { %>disabled<% } %>>-</button>
+                        <input type="number" id="quantity" value="1" min="1" max="<%= product.stock_quantity || 1 %>" <% if (product.stock_quantity <= 0) { %>disabled<% } %>>
+                        <button class="btn-quantity increase" type="button" <% if (product.stock_quantity <= 0) { %>disabled<% } %>>+</button>
+                    </div>
+                    <button id="addToCartBtn" class="btn-add-cart" <% if (product.stock_quantity <= 0) { %>disabled<% } %>>
+                        <i class="bi bi-cart-plus"></i>
+                        <% if (product.stock_quantity <= 0) { %>Hết hàng<% } else { %>Thêm vào giỏ hàng<% } %>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Product Tabs -->
+        <div class="product-tabs">
+            <ul class="nav nav-tabs" id="productTabs" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" id="description-tab" data-bs-toggle="tab" href="#description" role="tab">
+                        Mô tả sản phẩm
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="ingredients-tab" data-bs-toggle="tab" href="#ingredients" role="tab">
+                        Thành phần
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="nutrition-tab" data-bs-toggle="tab" href="#nutrition" role="tab">
+                        Giá trị dinh dưỡng
+                    </a>
+                </li>
+            </ul>
+            <div class="tab-content" id="productTabsContent">
+                <div class="tab-pane fade show active" id="description" role="tabpanel">
+                    <div class="tab-content-body">
+                        <%= product.description %>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="ingredients" role="tabpanel">
+                    <div class="tab-content-body">
+                        <%= product.ingredients || 'Chưa có thông tin thành phần' %>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="nutrition" role="tabpanel">
+                    <div class="tab-content-body">
+                        <%= product.nutrition || 'Chưa có thông tin giá trị dinh dưỡng' %>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Related Products -->
+        <div class="related-products">
+            <h2 class="section-title">Sản phẩm liên quan</h2>
+            <div class="product-grid">
+                <% relatedProducts.forEach(function(relatedProduct) { %>
+                    <div class="product-card">
+                        <div class="card-img-wrapper">
+                            <a href="/san-pham/<%= relatedProduct.id %>">
+                                <img src="<%= relatedProduct.image_url %>" alt="<%= relatedProduct.name %>">
+                            </a>
+                        </div>
+                        <div class="card-body">
+                            <h3 class="product-title">
+                                <a href="/san-pham/<%= relatedProduct.id %>">
+                                    <%= relatedProduct.name %>
+                                </a>
+                            </h3>
+                            <div class="product-price">
+                                <%= new Intl.NumberFormat('vi-VN').format(relatedProduct.price) %> VND
+                            </div>
+                            <button class="btn-add-cart" onclick="addToCart('<%= relatedProduct.id %>')">
+                                <i class="bi bi-cart-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                <% }); %>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Add to Cart Script -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const quantityInput = document.getElementById('quantity');
+    const decreaseBtn = document.querySelector('.decrease');
+    const increaseBtn = document.querySelector('.increase');
+    const addToCartBtn = document.getElementById('addToCartBtn');
+    const maxQuantity = parseInt('<%= product.stock_quantity || 0 %>');
+    
+    // Disable add to cart if out of stock
+    if (maxQuantity <= 0) {
+        addToCartBtn.disabled = true;
+        addToCartBtn.classList.add('disabled');
+        addToCartBtn.innerHTML = '<i class="bi bi-x-circle"></i> Hết hàng';
+        return;
+    }
+
+    // Xử lý nút giảm số lượng
+    decreaseBtn.addEventListener('click', () => {
+        const currentValue = parseInt(quantityInput.value);
+        if (currentValue > 1) {
+            quantityInput.value = currentValue - 1;
+        }
+    });
+
+    // Xử lý nút tăng số lượng
+    increaseBtn.addEventListener('click', () => {
+        const currentValue = parseInt(quantityInput.value);
+        if (currentValue < maxQuantity) {
+            quantityInput.value = currentValue + 1;
+        }
+    });
+
+    // Xử lý khi người dùng nhập trực tiếp số lượng
+    quantityInput.addEventListener('change', () => {
+        let value = parseInt(quantityInput.value) || 1;
+        value = Math.max(1, Math.min(value, maxQuantity));
+        quantityInput.value = value;
+    });
+
+    // Xử lý thêm vào giỏ hàng
+    addToCartBtn.addEventListener('click', () => {
+        const quantity = parseInt(quantityInput.value);
+        
+        // Show loading state
+        addToCartBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Đang thêm...';
+        addToCartBtn.disabled = true;
+        
+        fetch('/gio-hang/items/<%= product.id %>', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ quantity })
+        })
+        .then(response => {
+            if (response.status === 401) {
+                // Chưa đăng nhập - chuyển hướng đến trang đăng nhập
+                window.location.href = '/auth/dang-nhap';
+                return;
+            }
+            
+            if (response.status === 400) {
+                // Reset button state
+                addToCartBtn.innerHTML = '<i class="bi bi-cart-plus"></i> Thêm vào giỏ hàng';
+                addToCartBtn.disabled = false;
+                
+                // Parse the error response
+                return response.json().then(data => {
+                    throw new Error(data.message || 'Không thể thêm vào giỏ hàng');
+                });
+            }
+            
+            // Set success state
+            addToCartBtn.innerHTML = '<i class="bi bi-check-circle"></i> Đã thêm vào giỏ hàng';
+            addToCartBtn.classList.remove('btn-add-cart');
+            addToCartBtn.classList.add('btn-success');
+            
+            return response.json();
+        })
+        .then(data => {
+            if (!data) return; // Nếu đã chuyển hướng đến trang đăng nhập
+            
+            if (data.message) {
+                // Hiển thị thông báo thành công
+                const toast = document.createElement('div');
+                toast.className = 'toast success';
+                toast.innerHTML = `
+                    <div class="toast-content">
+                        <i class="bi bi-check-circle"></i>
+                        <div>
+                            <strong>Thêm vào giỏ hàng thành công</strong>
+                            <p>Đã thêm ${quantity} sản phẩm vào giỏ hàng</p>
+                        </div>
+                    </div>
+                    <div class="toast-actions">
+                        <a href="/gio-hang" class="btn btn-outline">Xem giỏ hàng</a>
+                        <button class="btn btn-text" onclick="this.parentElement.parentElement.remove()">Đóng</button>
+                    </div>
+                `;
+                document.body.appendChild(toast);
+                
+                // Tự động ẩn toast sau 5 giây
+                setTimeout(() => {
+                    toast.remove();
+                }, 5000);
+
+                // Cập nhật số lượng trong giỏ hàng trên header (nếu có)
+                const cartBadge = document.querySelector('.cart-badge');
+                if (cartBadge) {
+                    const currentCount = parseInt(cartBadge.textContent) || 0;
+                    cartBadge.textContent = currentCount + quantity;
+                }
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            
+            // Reset button state
+            addToCartBtn.innerHTML = '<i class="bi bi-cart-plus"></i> Thêm vào giỏ hàng';
+            addToCartBtn.disabled = false;
+            
+            // Show error toast
+            const toast = document.createElement('div');
+            toast.className = 'toast error';
+            toast.innerHTML = `
+                <div class="toast-content">
+                    <i class="bi bi-exclamation-circle"></i>
+                    <div>
+                        <strong>Lỗi</strong>
+                        <p>${error.message || 'Có lỗi xảy ra khi thêm vào giỏ hàng'}</p>
+                    </div>
+                </div>
+                <div class="toast-actions">
+                    <button class="btn btn-text" onclick="this.parentElement.parentElement.remove()">Đóng</button>
+                </div>
+            `;
+            document.body.appendChild(toast);
+            
+            // Tự động ẩn toast sau 5 giây
+            setTimeout(() => {
+                toast.remove();
+            }, 5000);
+        });
+    });
+});
+
+function updateQuantity(change) {
+    const input = document.getElementById('quantity');
+    const currentValue = parseInt(input.value);
+    const maxValue = parseInt(input.max);
+    const newValue = currentValue + change;
+    
+    if (newValue >= 1 && newValue <= maxValue) {
+        input.value = newValue;
+    }
+}
+
+function changeImage(imageUrl) {
+    document.getElementById('mainImage').src = imageUrl;
+    document.querySelectorAll('.thumbnail').forEach(thumb => {
+        thumb.classList.remove('active');
+        if (thumb.querySelector('img').src === imageUrl) {
+            thumb.classList.add('active');
+        }
+    });
+}
+
+function addToCart(productId) {
+    const quantity = document.getElementById('quantity').value;
+    fetch('/cart/add', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            productId: productId,
+            quantity: parseInt(quantity)
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            window.location.reload();
+        } else {
+            alert('Có lỗi xảy ra khi thêm vào giỏ hàng');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Có lỗi xảy ra khi thêm vào giỏ hàng');
+    });
+}
+</script>
+
+<style>
+.quantity-selector {
+    display: flex;
+    align-items: center;
+    margin: 1rem 0;
+    max-width: 150px;
+}
+
+.btn-quantity {
+    width: 36px;
+    height: 36px;
+    border: 1px solid #ddd;
+    background: #fff;
+    color: #333;
+    font-size: 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.btn-quantity:hover {
+    background: #f5f5f5;
+}
+
+.btn-quantity:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+#quantity {
+    width: 60px;
+    height: 36px;
+    border: 1px solid #ddd;
+    text-align: center;
+    margin: 0 4px;
+    font-size: 16px;
+}
+
+.btn-add-cart {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    background: #e31837;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-add-cart:hover {
+    background: #c41230;
+}
+
+.toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: white;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    border-radius: 8px;
+    padding: 16px;
+    min-width: 300px;
+    z-index: 1000;
+}
+
+.toast.success {
+    border-left: 4px solid #4caf50;
+}
+
+.toast.error {
+    border-left: 4px solid #dc3545;
+}
+
+.toast-content {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.toast-content i {
+    font-size: 20px;
+}
+
+.toast.success .toast-content i {
+    color: #4caf50;
+}
+
+.toast.error .toast-content i {
+    color: #dc3545;
+}
+
+.toast-actions {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+}
+
+.btn-outline {
+    padding: 6px 12px;
+    border: 1px solid #ddd;
+    background: white;
+    color: #333;
+    border-radius: 4px;
+    text-decoration: none;
+}
+
+.btn-text {
+    padding: 6px 12px;
+    border: none;
+    background: none;
+    color: #666;
+    cursor: pointer;
+}
+</style>
+
+<%- include('../partials/footer') %> 

@@ -1,0 +1,179 @@
+<%- include('../../partials/header') %>
+
+<section class="auth-page">
+    <div class="container">
+        <div class="auth-content">
+            <div class="auth-form">
+                <h1>Đăng ký</h1>
+                <% if (error) { %>
+                    <div class="alert alert-danger">
+                        <%= error %>
+                    </div>
+                <% } %>
+                <form action="/auth/dang-ky" method="POST">
+                    <div class="form-group">
+                        <label for="fullName">Họ và tên *</label>
+                        <input type="text" 
+                               id="fullName" 
+                               name="fullName" 
+                               value="<%= locals.values ? values.fullName : '' %>"
+                               required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">Email *</label>
+                        <input type="email" 
+                               id="email" 
+                               name="email" 
+                               value="<%= locals.values ? values.email : '' %>"
+                               required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Mật khẩu *</label>
+                        <input type="password" 
+                               id="password" 
+                               name="password" 
+                               required>
+                        <small class="form-text text-muted">Mật khẩu phải có ít nhất 6 ký tự</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="phone">Số điện thoại</label>
+                        <input type="tel" 
+                               id="phone" 
+                               name="phone" 
+                               value="<%= locals.values ? values.phone : '' %>"
+                               pattern="[0-9]{10,11}">
+                        <small class="form-text text-muted">Định dạng: 10-11 số</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="address">Địa chỉ</label>
+                        <textarea id="address" 
+                                  name="address"><%= locals.values ? values.address : '' %></textarea>
+                    </div>
+
+                    <button type="submit" class="btn-submit">Đăng ký</button>
+                </form>
+
+                <div class="auth-links">
+                    <p>Đã có tài khoản? <a href="/auth/dang-nhap">Đăng nhập ngay</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+.auth-page {
+    padding: 80px 0;
+    background-color: #f8f9fa;
+    min-height: calc(100vh - 200px);
+}
+
+.auth-content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.auth-form {
+    background: #fff;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+    width: 100%;
+    max-width: 480px;
+}
+
+.auth-form h1 {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text-color);
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.alert {
+    padding: 12px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+}
+
+.alert-danger {
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    color: #721c24;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--text-color);
+    font-weight: 500;
+}
+
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 16px;
+}
+
+.form-group textarea {
+    height: 100px;
+    resize: vertical;
+}
+
+.btn-submit {
+    width: 100%;
+    background: var(--primary-gradient);
+    color: #fff;
+    border: none;
+    padding: 15px;
+    border-radius: 8px;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-submit:hover {
+    background: var(--primary-dark);
+    transform: translateY(-2px);
+}
+
+.auth-links {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.auth-links a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.auth-links a:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 575px) {
+    .auth-page {
+        padding: 40px 0;
+    }
+
+    .auth-form {
+        padding: 20px;
+    }
+}
+</style>
+
+<%- include('../../partials/footer') %> 

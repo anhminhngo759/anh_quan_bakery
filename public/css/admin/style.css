@@ -1,0 +1,33 @@
+/* Admin styles */
+
+/* Override badge styles for admin tables */
+.table .badge {
+    position: static !important;
+    padding: 0.5em 0.8em;
+    font-size: 0.75em;
+    font-weight: 500;
+    border-radius: 0.25rem;
+    display: inline-block;
+    line-height: 1;
+    height: auto;
+    min-width: auto;
+    text-align: center;
+}
+
+/* Colors for badges */
+.badge.bg-success {
+    background-color: #28a745 !important;
+}
+
+.badge.bg-danger {
+    background-color: #dc3545 !important;
+}
+
+/* Admin filter badges */
+.admin-filter .badge {
+    position: static !important;
+    padding: 0.5em 0.8em;
+    font-size: 0.75em;
+    line-height: 1;
+    height: auto;
+} 

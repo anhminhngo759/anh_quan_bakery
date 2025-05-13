@@ -1,0 +1,17 @@
+<%- include('partials/header') %>
+
+
+    <!-- Error Content -->
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8 text-center">
+                <i class="bi bi-exclamation-triangle display-1 text-danger mb-4"></i>
+                <h1 class="display-4 mb-4"><%= typeof title !== 'undefined' ? title : 'Lỗi' %></h1>
+                <p class="lead text-muted mb-4"><%= message %></p>
+                <a href="/" class="btn btn-primary btn-lg">
+                    <i class="bi bi-house-door"></i> Về trang chủ
+                </a>
+            </div>
+        </div>
+    </div>
+    <%- include('partials/footer') %>

@@ -1,0 +1,498 @@
+<%- include('../partials/header') %>
+
+<section class="checkout-page">
+    <div class="breadcrumb">
+        <div class="container">
+            <a href="/">Trang chủ</a>
+            <a href="/gio-hang">Giỏ hàng</a>
+            <span class="active">Thanh toán</span>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="checkout-content">
+            <!-- Add to the beginning of the form or in a hidden section -->
+            <% if (locals.retryOrder) { %>
+            <input type="hidden" id="retryOrderData" value='<%= JSON.stringify(locals.retryOrder) %>'>
+            <% } %>
+
+            <!-- Form thông tin khách hàng -->
+            <div class="customer-info">
+                <h2>Thông tin đặt hàng</h2>
+                <form id="checkoutForm" class="checkout-form">
+                    <div class="form-group">
+                        <label for="fullName">Họ và tên *</label>
+                        <input type="text" id="fullName" name="fullName" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">Email *</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="phone">Số điện thoại *</label>
+                        <input type="tel" id="phone" name="phone" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="address">Địa chỉ giao hàng *</label>
+                        <textarea id="address" name="address" required></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="note">Ghi chú</label>
+                        <textarea id="note" name="note"></textarea>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Thông tin đơn hàng -->
+            <div class="order-summary">
+                <h2>Đơn hàng của bạn</h2>
+                <div class="order-items">
+                    <% cartItems.forEach(function(item) { %>
+                        <div class="order-item">
+                            <div class="item-info">
+                                <h3><%= item.name %></h3>
+                                <p>Số lượng: <%= item.quantity %></p>
+                            </div>
+                            <div class="item-price">
+                                <%= new Intl.NumberFormat('vi-VN').format(item.price * item.quantity) %> VND
+                            </div>
+                        </div>
+                    <% }); %>
+                </div>
+
+                <div class="order-total">
+                    <div class="summary-row">
+                        <span>Tạm tính:</span>
+                        <span><%= new Intl.NumberFormat('vi-VN').format(totalAmount) %> VND</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Phí vận chuyển:</span>
+                        <span>Miễn phí</span>
+                    </div>
+                    <div class="summary-row total">
+                        <span>Tổng cộng:</span>
+                        <span><%= new Intl.NumberFormat('vi-VN').format(totalAmount) %> VND</span>
+                    </div>
+                </div>
+
+                <div class="payment-method">
+                    <h3>Phương thức thanh toán</h3>
+                    <div class="payment-option">
+                        <input type="radio" id="cash" name="payment" value="cash" checked>
+                        <label for="cash">Thanh toán khi nhận hàng (COD)</label>
+                    </div>
+                    <div class="payment-option mt-2">
+                        <input type="radio" id="momo" name="payment" value="momo">
+                        <label for="momo" class="d-flex align-items-center">
+                            <img src="/images/momo-logo.webp" alt="MoMo" class="payment-logo me-2">
+                            Ví điện tử MoMo
+                        </label>
+                    </div>
+                </div>
+
+                <div class="cart-actions">
+                    <a href="/san-pham" class="btn btn-secondary">Tiếp tục mua sắm</a>
+                    <button id="placeOrderBtn" class="btn btn-primary">Đặt hàng</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+.checkout-page {
+    padding: 80px 0;
+    background-color: #f8f9fa;
+}
+
+.checkout-content {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: 40px;
+}
+
+.customer-info,
+.order-summary {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+    padding: 30px;
+}
+
+.customer-info h2,
+.order-summary h2 {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text-color);
+    margin-bottom: 30px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--text-color);
+    font-weight: 500;
+}
+
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 16px;
+}
+
+.form-group textarea {
+    height: 100px;
+    resize: vertical;
+}
+
+.order-items {
+    margin-bottom: 30px;
+}
+
+.order-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.item-info h3 {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.item-info p {
+    color: #666;
+    font-size: 14px;
+}
+
+.item-price {
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+.order-total {
+    margin: 30px 0;
+    padding-top: 20px;
+    border-top: 2px solid #eee;
+}
+
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+}
+
+.summary-row.total {
+    border-top: 2px solid #eee;
+    margin-top: 10px;
+    padding-top: 20px;
+}
+
+.summary-row.total span {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+.payment-method {
+    margin: 30px 0;
+}
+
+.payment-method h3 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 15px;
+}
+
+.payment-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    margin-bottom: 10px;
+}
+
+.payment-logo {
+    height: 30px;
+    width: auto;
+}
+
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.loading-spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid #e31837;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.alert-box {
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    display: none;
+}
+
+.alert-error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.alert-success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.btn-place-order {
+    width: 100%;
+    background: var(--primary-gradient);
+    color: #fff;
+    border: none;
+    padding: 15px;
+    border-radius: 8px;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-place-order:hover {
+    background: var(--primary-dark);
+    transform: translateY(-2px);
+}
+
+@media (max-width: 991px) {
+    .checkout-content {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 767px) {
+    .checkout-page {
+        padding: 60px 0;
+    }
+}
+
+@media (max-width: 575px) {
+    .checkout-page {
+        padding: 40px 0;
+    }
+
+    .customer-info,
+    .order-summary {
+        padding: 20px;
+    }
+}
+</style>
+
+<!-- Add loading spinner overlay -->
+<div class="loading-overlay" id="loadingOverlay" style="display: none;">
+    <div class="loading-spinner"></div>
+</div>
+
+<!-- Alert box for displaying messages -->
+<div class="alert-box" id="alertBox">
+    <p id="alertMessage"></p>
+</div>
+
+<script>
+// Check URL parameters for payment status messages
+document.addEventListener('DOMContentLoaded', function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const error = urlParams.get('error');
+    const orderId = urlParams.get('orderId');
+    
+    // Initialize from server-side variable
+    const retryOrderData = document.getElementById('retryOrderData');
+    let retryOrder = null;
+    
+    if (retryOrderData && retryOrderData.value) {
+        try {
+            retryOrder = JSON.parse(retryOrderData.value);
+        } catch (e) {
+            console.error('Error parsing retry order data', e);
+        }
+    }
+    
+    if (retryOrder) {
+        // Show message about retry
+        showAlert(`Bạn đang thử lại thanh toán cho đơn hàng #${retryOrder.id}`, 'info');
+        
+        // Optionally pre-fill form fields if you have that data
+        if (document.getElementById('address')) {
+            document.getElementById('address').value = retryOrder.shipping_address || '';
+        }
+        if (document.getElementById('phone')) {
+            document.getElementById('phone').value = retryOrder.phone || '';
+        }
+        if (document.getElementById('note')) {
+            document.getElementById('note').value = retryOrder.notes || '';
+        }
+    }
+    
+    if (error === 'payment_failed' && orderId) {
+        // Show payment failed alert
+        showAlert('Thanh toán không thành công. Vui lòng thử lại hoặc chọn phương thức thanh toán khác.', 'error');
+    } else if (error) {
+        // Show general error
+        showAlert('Đã xảy ra lỗi. Vui lòng thử lại sau.', 'error');
+    }
+});
+
+document.getElementById('placeOrderBtn').addEventListener('click', async function() {
+    try {
+        const selectedPaymentMethod = document.querySelector('input[name="payment"]:checked').value;
+        const shipping_address = document.getElementById('address').value;
+        const phone = document.getElementById('phone').value;
+        const notes = document.getElementById('note').value;
+        
+        if (!shipping_address || !phone) {
+            showAlert('Vui lòng điền đầy đủ thông tin giao hàng', 'error');
+            return;
+        }
+        
+        if (selectedPaymentMethod === 'cash') {
+            // COD payment method - use the existing checkout flow
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            loadingOverlay.style.display = 'flex';
+            
+            const response = await fetch('/gio-hang/checkout', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    shipping_address: shipping_address,
+                    phone: phone,
+                    payment_method: 'cash',
+                    notes: notes
+                })
+            });
+
+            const data = await response.json();
+            
+            if (response.ok) {
+                // Redirect to order confirmation page
+                window.location.href = `/gio-hang/order-confirmation/${data.orderId}`;
+            } else {
+                // Show error message
+                loadingOverlay.style.display = 'none';
+                showAlert(data.message || 'Đã có lỗi xảy ra khi đặt hàng', 'error');
+            }
+        } else if (selectedPaymentMethod === 'momo') {
+            // MoMo payment method
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            loadingOverlay.style.display = 'flex';
+            
+            // First, create order with pending payment status
+            const orderResponse = await fetch('/gio-hang/checkout', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    shipping_address: shipping_address,
+                    phone: phone,
+                    payment_method: 'momo',
+                    payment_status: 'pending',
+                    notes: notes
+                })
+            });
+
+            const orderData = await orderResponse.json();
+            
+            if (orderResponse.ok) {
+                // Store the order ID in localStorage to handle MoMo returns with missing data
+                localStorage.setItem('pendingMomoOrderId', orderData.orderId);
+                
+                // Create MoMo payment
+                const momoResponse = await fetch('/payment/momo/create', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        orderId: orderData.orderId
+                    })
+                });
+                
+                const momoData = await momoResponse.json();
+                
+                if (momoResponse.ok) {
+                    // Redirect to MoMo payment page
+                    window.location.href = momoData.paymentUrl || momoData.payUrl;
+                } else {
+                    // Show error message
+                    loadingOverlay.style.display = 'none';
+                    showAlert(momoData.message || 'Không thể tạo thanh toán MoMo', 'error');
+                }
+            } else {
+                // Show error message
+                loadingOverlay.style.display = 'none';
+                showAlert(orderData.message || 'Đã có lỗi xảy ra khi đặt hàng', 'error');
+            }
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        loadingOverlay.style.display = 'none';
+        showAlert('Đã có lỗi xảy ra khi đặt hàng', 'error');
+    }
+});
+
+// Helper function to show alerts
+function showAlert(message, type) {
+    const alertBox = document.getElementById('alertBox');
+    const alertMessage = document.getElementById('alertMessage');
+    
+    alertBox.className = 'alert-box';
+    alertBox.classList.add(type === 'error' ? 'alert-error' : 'alert-success');
+    
+    alertMessage.textContent = message;
+    alertBox.style.display = 'block';
+    
+    // Auto hide after 5 seconds
+    setTimeout(function() {
+        alertBox.style.display = 'none';
+    }, 5000);
+}
+</script>
+
+<%- include('../partials/footer') %> 

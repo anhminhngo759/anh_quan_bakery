@@ -1,0 +1,17 @@
+/* reset
+============================================= */
+body {
+  font-family: var(--font-family);
+  color: var(--dark-color);
+  padding-top: 90px;
+  margin: 0;
+}
+
+a {
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+img {
+  max-width: 100%;
+}

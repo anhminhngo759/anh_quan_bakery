@@ -1,0 +1,246 @@
+<%- include('../partials/header') %>
+
+<section class="contact-page">
+  <!-- Breadcrumb -->
+  <div class="breadcrumb">
+    <div class="container">
+      <a href="/">Trang chủ</a>
+      <span class="active">Liên hệ</span>
+    </div>
+  </div>
+
+  <div class="container py-5">
+    <div class="row">
+      <div class="col-12 text-center mb-5">
+        <h1 class="fw-bold">Liên hệ</h1>
+        <p class="lead">Chúng tôi luôn sẵn sàng lắng nghe ý kiến của bạn</p>
+      </div>
+    </div>
+
+    <div class="row g-4">
+      <!-- Contact Information -->
+      <div class="col-lg-4">
+        <div class="card h-100 border-0 shadow-sm">
+          <div class="card-body">
+            <h3 class="fw-bold mb-4">Thông tin liên hệ</h3>
+            
+            <div class="d-flex mb-4">
+              <div class="flex-shrink-0 me-3">
+                <div class="contact-icon-wrapper bg-primary-subtle p-3 rounded-circle">
+                  <i class="bi bi-geo-alt-fill text-primary"></i>
+                </div>
+              </div>
+              <div>
+                <h5 class="fs-5 fw-bold">Địa chỉ</h5>
+                <p class="mb-0">908 Trần Cao Vân, Thanh Khê, TP.Đà Nẵng</p>
+              </div>
+            </div>
+            
+            <div class="d-flex mb-4">
+              <div class="flex-shrink-0 me-3">
+                <div class="contact-icon-wrapper bg-primary-subtle p-3 rounded-circle">
+                  <i class="bi bi-telephone-fill text-primary"></i>
+                </div>
+              </div>
+              <div>
+                <h5 class="fs-5 fw-bold">Điện thoại</h5>
+                <p class="mb-0">(028) 3827 1234</p>
+              </div>
+            </div>
+            
+            <div class="d-flex mb-4">
+              <div class="flex-shrink-0 me-3">
+                <div class="contact-icon-wrapper bg-primary-subtle p-3 rounded-circle">
+                  <i class="bi bi-envelope-fill text-primary"></i>
+                </div>
+              </div>
+              <div>
+                <h5 class="fs-5 fw-bold">Email</h5>
+                <p class="mb-0">info@anhquanbakery.com</p>
+              </div>
+            </div>
+            
+            <div class="d-flex mb-4">
+              <div class="flex-shrink-0 me-3">
+                <div class="contact-icon-wrapper bg-primary-subtle p-3 rounded-circle">
+                  <i class="bi bi-clock-fill text-primary"></i>
+                </div>
+              </div>
+              <div>
+                <h5 class="fs-5 fw-bold">Giờ mở cửa</h5>
+                <p class="mb-0">Thứ 2 - Chủ nhật: 7:00 - 22:00</p>
+              </div>
+            </div>
+            
+            <!-- Social Media -->
+            <div class="mt-5">
+              <h5 class="fs-5 fw-bold mb-3">Kết nối với chúng tôi</h5>
+              <div class="d-flex gap-2">
+                <a href="https://www.facebook.com/AnhQuanBakery0931602060" class="btn btn-outline-primary rounded-circle" title="Facebook" target="_blank">
+                  <i class="bi bi-facebook"></i>
+                </a>
+                <!-- <a href="#" class="btn btn-outline-info rounded-circle" title="Twitter">
+                  <i class="bi bi-twitter"></i>
+                </a>
+                <a href="#" class="btn btn-outline-danger rounded-circle" title="Instagram">
+                  <i class="bi bi-instagram"></i>
+                </a>
+                <a href="#" class="btn btn-outline-danger rounded-circle" title="Youtube">
+                  <i class="bi bi-youtube"></i>
+                </a> -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Contact Form -->
+      <div class="col-lg-8">
+        <div class="card border-0 shadow-sm">
+          <div class="card-body p-4 p-md-5">
+            <h3 class="fw-bold mb-4">Gửi tin nhắn</h3>
+            
+            <% if (messages && messages.success.length > 0) { %>
+              console.log(messages.success)
+              <div class="alert alert-success mb-4">
+                <%= messages.success %>
+              </div>
+            <% } %>
+            <% if (messages && messages.error.length > 0) { %>
+              <div class="alert alert-danger mb-4">
+                <%= messages.error %>
+              </div>
+            <% } %>
+            
+            <form id="contact-form" action="/lien-he" method="POST" class="needs-validation" novalidate>
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <div class="form-floating mb-3">
+                    <input type="text" class="form-control" id="name" name="name" placeholder="Nguyen Van A" required>
+                    <label for="name">Họ và tên</label>
+                    <div class="invalid-feedback">Vui lòng nhập họ tên của bạn</div>
+                  </div>
+                </div>
+                
+                <div class="col-md-6">
+                  <div class="form-floating mb-3">
+                    <input type="email" class="form-control" id="email" name="email" placeholder="example@email.com" required>
+                    <label for="email">Email</label>
+                    <div class="invalid-feedback">Vui lòng nhập email hợp lệ</div>
+                  </div>
+                </div>
+                
+                <div class="col-md-6">
+                  <div class="form-floating mb-3">
+                    <input type="tel" class="form-control" id="phone" name="phone" placeholder="0912345678">
+                    <label for="phone">Số điện thoại (tùy chọn)</label>
+                  </div>
+                </div>
+                
+                <div class="col-md-6">
+                  <div class="form-floating mb-3">
+                    <select class="form-select" id="subject" name="subject" required>
+                      <option value="" selected disabled>Chọn chủ đề</option>
+                      <option value="Đặt hàng">Đặt hàng</option>
+                      <option value="Khiếu nại">Khiếu nại</option>
+                      <option value="Góp ý">Góp ý</option>
+                      <option value="Hợp tác">Hợp tác</option>
+                      <option value="Khác">Khác</option>
+                    </select>
+                    <label for="subject">Chủ đề</label>
+                    <div class="invalid-feedback">Vui lòng chọn chủ đề</div>
+                  </div>
+                </div>
+                
+                <div class="col-12">
+                  <div class="form-floating mb-3">
+                    <textarea class="form-control" id="message" name="message" placeholder="Nhập nội dung..." style="height: 150px" required></textarea>
+                    <label for="message">Nội dung</label>
+                    <div class="invalid-feedback">Vui lòng nhập nội dung tin nhắn</div>
+                  </div>
+                </div>
+                
+                <div class="col-12">
+                  <div class="form-check mb-3">
+                    <input class="form-check-input" type="checkbox" id="privacy" required>
+                    <label class="form-check-label" for="privacy">
+                      Tôi đồng ý với <a href="#">chính sách bảo mật</a> của Anh Quân Bakery
+                    </label>
+                    <div class="invalid-feedback">Bạn cần đồng ý với chính sách bảo mật</div>
+                  </div>
+                </div>
+                
+                <div class="col-12">
+                  <button type="submit" class="btn btn-primary btn-lg">
+                    <i class="bi bi-send me-2"></i>Gửi tin nhắn
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Map -->
+    <div class="row mt-5">
+      <div class="col-12">
+        <div class="card border-0 shadow-sm">
+          <div class="card-body p-0">
+            <iframe 
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3833.990228794755!2d108.18058457459998!3d16.0659968395255!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3142190215894d6d%3A0x8bc8d371779480ba!2zOTA4IFRy4bqnbiBDYW8gVsOibiwgVGhhbmggS2jDqiDEkMO0bmcsIFRoYW5oIEtow6osIMSQw6AgTuG6tW5nIDU1MDAwMCwgVmnhu4d0IE5hbQ!5e0!3m2!1svi!2s!4v1745508946444!5m2!1svi!2s" 
+              width="100%" 
+              height="450" 
+              style="border:0;" 
+              allowfullscreen="" 
+              loading="lazy">
+            </iframe>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+.contact-icon-wrapper {
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.contact-icon-wrapper i {
+  font-size: 1.5rem;
+}
+
+.btn.rounded-circle {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+</style>
+
+<script>
+// Form validation
+(function() {
+  'use strict';
+  window.addEventListener('load', function() {
+    const forms = document.getElementsByClassName('needs-validation');
+    Array.prototype.filter.call(forms, function(form) {
+      form.addEventListener('submit', function(event) {
+        if (form.checkValidity() === false) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+        form.classList.add('was-validated');
+      }, false);
+    });
+  }, false);
+})();
+</script>
+
+<%- include('../partials/footer') %> 

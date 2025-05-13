@@ -1,0 +1,139 @@
+<%- include('../../../partials/header-admin') %>
+
+<div class="container-fluid">
+  <div class="row">
+    <!-- Sidebar -->
+    <div class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
+      <%- include('../../../partials/admin-sidebar') %>
+    </div>
+
+    <!-- Main content -->
+    <div class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+      <div class="d-flex justify-content-between align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1 class="h2">Quản lý danh mục</h1>
+        <a href="/admin/categories/new" class="btn btn-primary">
+          <i class="bi bi-plus-circle"></i> Thêm danh mục mới
+        </a>
+      </div>
+
+      <div class="card">
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Tên danh mục</th>
+                  <th>Mô tả</th>
+                  <th>Ngày tạo</th>
+                  <th>Thao tác</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% if (categories && categories.length > 0) { %>
+                  <% categories.forEach(category => { %>
+                    <tr>
+                      <td><%= category.id %></td>
+                      <td><%= category.name %></td>
+                      <td><%= category.description %></td>
+                      <td><%= new Date(category.created_at).toLocaleDateString('vi-VN') %></td>
+                      <td>
+                        <div class="btn-group">
+                          <a href="/admin/categories/<%= category.id %>/edit" class="btn btn-sm btn-warning">
+                            <i class="bi bi-pencil"></i> Sửa
+                          </a>
+                          <button class="btn btn-sm btn-danger delete-category" data-id="<%= category.id %>" data-name="<%= category.name %>">
+                            <i class="bi bi-trash"></i> Xóa
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  <% }) %>
+                <% } else { %>
+                  <tr>
+                    <td colspan="5" class="text-center">Không có danh mục nào</td>
+                  </tr>
+                <% } %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal xác nhận xóa -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deleteModalLabel">Xác nhận xóa</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        Bạn có chắc chắn muốn xóa danh mục "<span id="categoryName"></span>"?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+        <form id="deleteForm" method="POST">
+          <button type="submit" class="btn btn-danger">Xóa</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Check if we're in the document's ready state or wait for DOMContentLoaded
+  function initializeDeleteButtons() {
+    const deleteButtons = document.querySelectorAll('.delete-category');
+    const deleteForm = document.getElementById('deleteForm');
+    const categoryNameSpan = document.getElementById('categoryName');
+    const deleteModalElement = document.getElementById('deleteModal');
+    
+    deleteButtons.forEach(button => {
+      button.addEventListener('click', function() {
+        const categoryId = this.getAttribute('data-id');
+        const categoryName = this.getAttribute('data-name');
+        
+        categoryNameSpan.textContent = categoryName;
+        deleteForm.action = `/admin/categories/${categoryId}/delete`;
+        
+        // Initialize Bootstrap modal safely
+        if (typeof bootstrap !== 'undefined') {
+          const deleteModal = new bootstrap.Modal(deleteModalElement);
+          deleteModal.show();
+        } else {
+          console.error('Bootstrap is not loaded yet. Attempting to load it from CDN.');
+          // Fallback - try to load Bootstrap dynamically
+          const script = document.createElement('script');
+          script.src = 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js';
+          script.onload = function() {
+            const deleteModal = new bootstrap.Modal(deleteModalElement);
+            deleteModal.show();
+          };
+          document.head.appendChild(script);
+        }
+      });
+    });
+  }
+
+  // Ensure the code runs after the page is fully loaded
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeDeleteButtons);
+  } else {
+    // If DOMContentLoaded has already fired
+    initializeDeleteButtons();
+  }
+
+  // Additional safety - try again after window load to ensure all scripts are loaded
+  window.addEventListener('load', function() {
+    if (typeof bootstrap === 'undefined') {
+      console.warn('Bootstrap still not loaded after window load. Retrying initialization.');
+      setTimeout(initializeDeleteButtons, 500);
+    }
+  });
+</script>
+
+<%- include('../../../partials/footer-admin') %>

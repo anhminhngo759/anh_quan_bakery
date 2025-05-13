@@ -1,0 +1,290 @@
+<%- include('../partials/header') %>
+
+<section class="products-page">
+    <!-- Breadcrumb -->
+    <div class="breadcrumb">
+        <div class="container">
+            <a href="/">Trang chủ</a>
+            <span class="active">Sản phẩm</span>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Category Slider -->
+        <div class="lefpsp">
+            <div class="menusp1a">
+                <div class="owl-carousel owl-theme" id="slide-sp">
+                    <% categories.forEach(function(cat) { %>
+                        <div class="noidungsp">
+                            <a href="/danh-muc/<%= cat.id %>">
+                                <img src="/images/categories/<%= cat.id %>.jpg" alt="<%= cat.name %>" title="<%= cat.name %>">
+                            </a>
+                            <div class="linksp">
+                                <a href="/danh-muc/<%= cat.id %>"><%= cat.name %></a>
+                            </div>
+                        </div>
+                    <% }); %>
+                </div>
+            </div>
+        </div>
+        <!-- Section Title -->
+        <div class="section-title">
+            <h2>Tất cả sản phẩm</h2>
+            <% if (search) { %>
+                <p>Kết quả tìm kiếm cho: "<%= search %>"</p>
+            <% } %>
+        </div>
+
+        <!-- Products Grid -->
+        <div class="product-grid">
+            <% products.forEach(function(product) { %>
+                <div class="product-card" data-product-id="<%= product.id %>">
+                    <div class="card-img-wrapper">
+                        <a href="/san-pham/<%= product.id %>">
+                            <img src="<%= product.image_url %>" alt="<%= product.name %>">
+                        </a>
+                        <% if (product.stock_quantity <= 0) { %>
+                            <span class="out-of-stock-badge">Hết hàng</span>
+                        <% } %>
+                    </div>
+                    <div class="card-body">
+                        <h3 class="product-title">
+                            <a href="/san-pham/<%= product.id %>">
+                                <%= product.name %>
+                            </a>
+                        </h3>
+                        <p class="product-description">
+                            <%= product.description.length > 100 ? product.description.substring(0, 100) + '...' : product.description %>
+                        </p>
+                        <div class="product-footer">
+                            <div class="product-price">
+                                <%= new Intl.NumberFormat('vi-VN').format(product.price) %> VND
+                            </div>
+                            <button class="btn <%= product.stock_quantity <= 0 ? 'btn-secondary disabled' : 'btn-primary' %> add-to-cart" 
+                                    <%= product.stock_quantity <= 0 ? 'disabled' : '' %>>
+                                <i class="bi <%= product.stock_quantity <= 0 ? 'bi-x-circle' : 'bi-cart-plus' %>"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            <% }); %>
+        </div>
+
+        <!-- Pagination -->
+        <% if (pagination.total_pages > 1) { %>
+            <nav aria-label="Page navigation">
+                <ul class="pagination">
+                    <% if (pagination.page > 1) { %>
+                        <li class="page-item">
+                            <a class="page-link" href="/san-pham?page=<%= pagination.page - 1 %><%= selectedCategory ? '&category_id=' + selectedCategory : '' %><%= search ? '&search=' + search : '' %>" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                    <% } %>
+
+                    <% for(let i = 1; i <= pagination.total_pages; i++) { %>
+                        <li class="page-item <%= pagination.page === i ? 'active' : '' %>">
+                            <a class="page-link" href="/san-pham?page=<%= i %><%= selectedCategory ? '&category_id=' + selectedCategory : '' %><%= search ? '&search=' + search : '' %>">
+                                <%= i %>
+                            </a>
+                        </li>
+                    <% } %>
+
+                    <% if (pagination.page < pagination.total_pages) { %>
+                        <li class="page-item">
+                            <a class="page-link" href="/san-pham?page=<%= pagination.page + 1 %><%= selectedCategory ? '&category_id=' + selectedCategory : '' %><%= search ? '&search=' + search : '' %>" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                    <% } %>
+                </ul>
+            </nav>
+        <% } %>
+    </div>
+</section>
+<!-- Add Toast Styles -->
+<style>
+    .toast {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        background: white;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        border-radius: 8px;
+        padding: 16px;
+        min-width: 300px;
+        z-index: 1000;
+    }
+    
+    .toast.success {
+        border-left: 4px solid #4caf50;
+    }
+    
+    .toast.error {
+        border-left: 4px solid #dc3545;
+    }
+    
+    .toast-content {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        margin-bottom: 12px;
+    }
+    
+    .toast-content i {
+        font-size: 20px;
+    }
+    
+    .toast.success .toast-content i {
+        color: #4caf50;
+    }
+    
+    .toast.error .toast-content i {
+        color: #dc3545;
+    }
+    
+    .toast-actions {
+        display: flex;
+        gap: 8px;
+        justify-content: flex-end;
+    }
+    
+    .btn-outline {
+        padding: 6px 12px;
+        border: 1px solid #ddd;
+        background: white;
+        color: #333;
+        border-radius: 4px;
+        text-decoration: none;
+    }
+    
+    .btn-text {
+        padding: 6px 12px;
+        border: none;
+        background: none;
+        color: #666;
+        cursor: pointer;
+    }
+
+    .card-img-wrapper {
+        position: relative;
+    }
+
+    .out-of-stock-badge {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background-color: rgba(220, 53, 69, 0.85);
+        color: white;
+        padding: 5px 10px;
+        font-size: 12px;
+        border-radius: 4px;
+        font-weight: bold;
+    }
+</style>
+<!-- Add to Cart Script -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Add to cart functionality
+    const addToCartButtons = document.querySelectorAll('.add-to-cart');
+    
+    addToCartButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            // Skip if button is disabled (out of stock)
+            if (button.disabled || button.classList.contains('disabled')) {
+                // Show out of stock message
+                showToast('error', 'Sản phẩm đã hết hàng', 'Vui lòng chọn sản phẩm khác');
+                return;
+            }
+
+            const productCard = this.closest('.product-card');
+            const productId = productCard.dataset.productId;
+            const quantity = 1; // Default quantity
+            // Show loading state
+            button.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Đang thêm...';
+            button.disabled = true;
+            fetch(`/gio-hang/items/${productId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ quantity })
+            })
+            .then(response => {
+                if (response.status === 401) {
+                    // Chưa đăng nhập - chuyển hướng đến trang đăng nhập
+                    window.location.href = '/auth/dang-nhap';
+                    return;
+                }
+                
+                if (response.status === 400) {
+                    // Reset button state
+                    button.innerHTML = '<i class="bi bi-cart-plus"></i>';
+                    button.disabled = false;
+                    // Parse the error response
+                    return response.json().then(data => {
+                        throw new Error(data.message || 'Không thể thêm vào giỏ hàng');
+                    });
+                }
+                
+                // Reset button state
+                button.innerHTML = 'Đã thêm';
+                button.classList.remove('btn-primary');
+                button.classList.add('btn-success');
+                
+                return response.json();
+            })
+            .then(data => {
+                if (!data) return; // Nếu đã chuyển hướng đến trang đăng nhập
+                
+                if (data.message) {
+                    // Hiển thị thông báo thành công
+                    showToast('success', 'Thêm vào giỏ hàng thành công', `Đã thêm ${quantity} sản phẩm vào giỏ hàng`);
+
+                    // Cập nhật số lượng trong giỏ hàng trên header (nếu có)
+                    const cartBadge = document.querySelector('.cart-badge');
+                    if (cartBadge) {
+                        const currentCount = parseInt(cartBadge.textContent) || 0;
+                        cartBadge.textContent = currentCount + quantity;
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                // Reset button state
+                button.innerHTML = '<i class="bi bi-cart-plus"></i>';
+                button.disabled = false;
+                // Show error message
+                showToast('error', 'Lỗi', error.message || 'Có lỗi xảy ra khi thêm vào giỏ hàng');
+            });
+        });
+    });
+    
+    // Helper function to show toast messages
+    function showToast(type, title, message) {
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        toast.innerHTML = `
+            <div class="toast-content">
+                <i class="bi ${type === 'success' ? 'bi-check-circle' : 'bi-exclamation-circle'}"></i>
+                <div>
+                    <strong>${title}</strong>
+                    <p>${message}</p>
+                </div>
+            </div>
+            <div class="toast-actions">
+                ${type === 'success' ? '<a href="/gio-hang" class="btn btn-outline">Xem giỏ hàng</a>' : ''}
+                <button class="btn btn-text" onclick="this.parentElement.parentElement.remove()">Đóng</button>
+            </div>
+        `;
+        document.body.appendChild(toast);
+        
+        // Tự động ẩn toast sau 5 giây
+        setTimeout(() => {
+            toast.remove();
+        }, 5000);
+    }
+});
+</script>
+
+<%- include('../partials/footer') %> 

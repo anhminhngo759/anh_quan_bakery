@@ -1,0 +1,102 @@
+<%- include('../../partials/header-admin') %>
+
+<div class="container-fluid">
+  <div class="row">
+    <!-- Sidebar -->
+    <div class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
+      <%- include('../../partials/admin-sidebar') %>
+    </div>
+
+    <!-- Main content -->
+    <div class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+      <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1 class="h2">Trang quản trị</h1>
+      </div>
+      
+      <div class="row mb-4">
+        <div class="col-md-3">
+          <div class="card bg-primary text-white">
+            <div class="card-body">
+              <h5 class="card-title">Tổng người dùng</h5>
+              <h2 class="card-text"><%= totalUsers %></h2>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="card bg-success text-white">
+            <div class="card-body">
+              <h5 class="card-title">Tổng sản phẩm</h5>
+              <h2 class="card-text"><%= totalProducts %></h2>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="card bg-info text-white">
+            <div class="card-body">
+              <h5 class="card-title">Tổng đơn hàng</h5>
+              <h2 class="card-text"><%= totalOrders %></h2>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="card bg-warning text-white">
+            <div class="card-body">
+              <h5 class="card-title">Doanh thu</h5>
+              <h2 class="card-text"><%= new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(revenue || 0) %></h2>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header">
+              <h5>Đơn hàng gần đây</h5>
+            </div>
+            <div class="card-body">
+              <% if (recentOrders && recentOrders.length > 0) { %>
+                <table class="table table-striped">
+                  <thead>
+                    <tr>
+                      <th>Mã đơn hàng</th>
+                      <th>Khách hàng</th>
+                      <th>Trạng thái</th>
+                      <th>Tổng tiền</th>
+                      <th>Thời gian</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% recentOrders.forEach(order => { %>
+                      <tr>
+                        <td>#<%= order.id %></td>
+                        <td><%= order.user_name || 'Khách hàng' %></td>
+                        <td>
+                          <% if (order.status === 'pending') { %><span class="badge bg-warning">Chờ xử lý</span><% } %>
+                          <% if (order.status === 'confirmed') { %><span class="badge bg-info">Đã xác nhận</span><% } %>
+                          <% if (order.status === 'shipped') { %><span class="badge bg-primary">Đang giao</span><% } %>
+                          <% if (order.status === 'delivered') { %><span class="badge bg-success">Đã giao</span><% } %>
+                          <% if (order.status === 'canceled') { %><span class="badge bg-danger">Đã hủy</span><% } %>
+                        </td>
+                        <td><%= new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(order.total_amount) %></td>
+                        <td><%= new Date(order.created_at).toLocaleString('vi-VN') %></td>
+                        <td>
+                          <a href="/admin/orders/<%= order.id %>" class="btn btn-sm btn-primary">Chi tiết</a>
+                        </td>
+                      </tr>
+                    <% }) %>
+                  </tbody>
+                </table>
+              <% } else { %>
+                <p class="text-center">Không có đơn hàng nào.</p>
+              <% } %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('../../partials/footer-admin') %>

@@ -1,0 +1,115 @@
+<%- include('../partials/header') %>
+
+<div class="container mt-5 pt-5">
+  <div class="row">
+    <div class="col-12">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Chi Tiết Đơn Hàng #<%= order.id %></h2>
+        <a href="/don-hang/<%= order.id %>/print" class="btn btn-outline-primary">
+          <i class="bi bi-printer"></i> In đơn hàng
+        </a>
+      </div>
+
+      <!-- Thông tin đơn hàng -->
+      <div class="card mb-4">
+        <div class="card-header">
+          <h5 class="card-title mb-0">Thông Tin Đơn Hàng</h5>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-6">
+              <p><strong>Ngày đặt:</strong> <%= new Date(order.created_at).toLocaleDateString('vi-VN') %></p>
+              <div class="mb-3">
+                <strong>Trạng thái:</strong><br>
+                <span class="badge bg-<%= order.status === 'pending' ? 'warning' : 
+                  order.status === 'confirmed' ? 'info' :
+                  order.status === 'shipped' ? 'primary' : 
+                  order.status === 'delivered' ? 'success' : 
+                  order.status === 'canceled' ? 'danger' : 'secondary' %> mt-1">
+                  <%= order.status === 'pending' ? 'Chờ xác nhận' :
+                      order.status === 'confirmed' ? 'Đã xác nhận' :
+                      order.status === 'shipped' ? 'Đang giao' :
+                      order.status === 'delivered' ? 'Đã giao' :
+                      order.status === 'canceled' ? 'Đã hủy' : order.status %>
+                </span>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <p><strong>Địa chỉ giao hàng:</strong> <%= order.shipping_address %></p>
+              <p><strong>Số điện thoại:</strong> <%= order.phone %></p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chi tiết sản phẩm -->
+      <div class="card mb-4">
+        <div class="card-header">
+          <h5 class="card-title mb-0">Chi Tiết Sản Phẩm</h5>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Sản Phẩm</th>
+                  <th class="text-center">Số Lượng</th>
+                  <th class="text-end">Đơn Giá</th>
+                  <th class="text-end">Thành Tiền</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% order.items.forEach(function(item) { %>
+                  <tr>
+                    <td>
+                      <div class="d-flex align-items-center">
+                        <img src="<%= item.image_url %>" alt="<%= item.name %>" class="me-3" style="width: 50px; height: 50px; object-fit: cover;">
+                        <div>
+                          <h6 class="mb-0"><%= item.name %></h6>
+                          <small class="text-muted"><%= item.category_name %></small>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="text-center"><%= item.quantity %></td>
+                    <td class="text-end"><%= new Intl.NumberFormat('vi-VN').format(item.price) %> VND</td>
+                    <td class="text-end"><%= new Intl.NumberFormat('vi-VN').format(item.price * item.quantity) %> VND</td>
+                  </tr>
+                <% }); %>
+              </tbody>
+              <tfoot>
+                <tr>
+                  <td colspan="3" class="text-end"><strong>Tổng tiền:</strong></td>
+                  <td class="text-end"><strong><%= new Intl.NumberFormat('vi-VN').format(order.total_amount) %> VND</strong></td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Ghi chú -->
+      <% if (order.notes) { %>
+        <div class="card">
+          <div class="card-header">
+            <h5 class="card-title mb-0">Ghi Chú</h5>
+          </div>
+          <div class="card-body">
+            <p class="mb-0"><%= order.notes %></p>
+          </div>
+        </div>
+      <% } %>
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/footer') %> 
+
+<style>
+.badge {
+  position: static !important;
+  padding: 0.5em 0.8em;
+  font-size: 0.75em;
+  line-height: 1;
+  height: auto;
+} 
+</style>

@@ -1,0 +1,217 @@
+<%- include('../partials/header', { title: title }) %>
+
+<!-- Thêm CSS tạm thời cho các thành phần cần thiết -->
+<style>
+  .ftco-animate {
+    animation-duration: 0.7s;
+    animation-name: fadeIn;
+  }
+  .blog-img {
+    display: block;
+    width: 100px;
+    height: 100px;
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+  }
+  .tag-cloud-link {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    margin: 0.2rem;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+    color: #6c757d;
+    text-decoration: none;
+    transition: all 0.3s ease;
+  }
+  .tag-cloud-link:hover {
+    background-color: #dc3545;
+    color: white;
+  }
+  .icon-calendar {
+    color: #dc3545;
+    margin-right: 0.5rem;
+  }
+  .icon-calendar:before {
+    content: '\F1B2';
+    font-family: bootstrap-icons;
+  }
+  .sidebar-box {
+    margin-bottom: 30px;
+    padding: 25px;
+    background: #f8f9fa;
+    border-radius: 5px;
+  }
+  .meta {
+    color: #6c757d;
+    font-size: 0.9rem;
+  }
+  .news-content img {
+    max-width: 100%;
+    height: auto;
+    margin: 1rem 0;
+  }
+  .news-content h1, .news-content h2, .news-content h3, .news-content h4, .news-content h5, .news-content h6 {
+    margin-top: 1.5rem;
+    margin-bottom: 1rem;
+    font-weight: 600;
+  }
+  .news-content p {
+    margin-bottom: 1rem;
+    line-height: 1.7;
+  }
+  .news-content blockquote {
+    padding: 1rem 1.5rem;
+    margin: 1.5rem 0;
+    background-color: #f8f9fa;
+    border-left: 4px solid #dc3545;
+    font-style: italic;
+  }
+  .news-content ul, .news-content ol {
+    margin-bottom: 1rem;
+    padding-left: 2rem;
+  }
+  .news-content table {
+    width: 100%;
+    margin-bottom: 1rem;
+    border-collapse: collapse;
+  }
+  .news-content table th, .news-content table td {
+    padding: 0.5rem;
+    border: 1px solid #dee2e6;
+  }
+  .news-content table th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+  }
+  .news-content a {
+    color: #dc3545;
+    text-decoration: none;
+  }
+  .news-content a:hover {
+    text-decoration: underline;
+  }
+  .news-content figure {
+    margin: 1.5rem 0;
+    text-align: center;
+  }
+  .news-content figcaption {
+    font-size: 0.875rem;
+    color: #6c757d;
+    padding: 0.5rem;
+  }
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+</style>
+
+<section class="back_all">
+  <!-- Breadcrumb -->
+  <div class="breadcrumb">
+    <div class="container">
+      <a href="/">Trang chủ</a>
+      <a href="/tin-tuc">Tin tức</a>
+      <a href="/tin-tuc/<%= newsItem.slug %>"><%= newsItem.title %></a>
+    </div>
+  </div>
+
+  <div class="khoang_cach">
+    <div class="container pt-5">
+      <div class="row">
+        <div class="col-lg-8 bg-white p-4 rounded shadow-sm">
+          <h1 class="mb-4 fw-bold"><%= newsItem.title %></h1>
+          
+          <div class="meta mb-4">
+            <span class="icon-calendar"></span> 
+            <%= new Date(newsItem.published_at || newsItem.created_at).toLocaleDateString('vi-VN') %>
+            <% if (newsItem.author_name) { %>
+              | <i class="bi bi-person"></i> <%= newsItem.author_name %>
+            <% } %>
+          </div>
+          
+          <% if (newsItem.image) { %>
+            <div class="mb-4">
+              <img src="<%= newsItem.image %>" alt="<%= newsItem.title %>" class="img-fluid rounded">
+            </div>
+          <% } %>
+          
+          <div class="mb-4 fw-bold fs-5">
+            <%= newsItem.summary %>
+          </div>
+          
+          <div class="news-content mb-5">
+            <%- newsItem.content %>
+          </div>
+          
+          <div class="d-flex justify-content-between align-items-center mt-5 pt-4 border-top">
+            <div>
+              <span class="fw-bold me-2">Chia sẻ:</span>
+              <a href="#" class="btn btn-sm btn-outline-primary me-1"><i class="bi bi-facebook"></i></a>
+              <a href="#" class="btn btn-sm btn-outline-info me-1"><i class="bi bi-twitter"></i></a>
+              <a href="#" class="btn btn-sm btn-outline-danger"><i class="bi bi-pinterest"></i></a>
+            </div>
+            <a href="/tin-tuc" class="btn btn-outline-secondary">
+              <i class="bi bi-arrow-left me-2"></i>Quay lại tin tức
+            </a>
+          </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+          <div class="sidebar-box bg-white p-4 rounded shadow-sm mb-4">
+            <h4 class="mb-3 fw-bold">Tìm kiếm</h4>
+            <form action="/tim-kiem" class="search-form" method="GET">
+              <div class="input-group">
+                <input type="text" name="q" class="form-control" placeholder="Tìm kiếm...">
+                <button class="btn btn-primary" type="submit">
+                  <i class="bi bi-search"></i>
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <div class="sidebar-box bg-white p-4 rounded shadow-sm">
+            <h4 class="mb-3 fw-bold">Tin tức liên quan</h4>
+            <% if (relatedNews && relatedNews.length > 0) { %>
+              <% relatedNews.forEach(related => { %>
+                <div class="d-flex mb-3 pb-3 border-bottom">
+                  <% if (related.image) { %>
+                    <a href="/tin-tuc/<%= related.slug %>" class="me-3">
+                      <img src="<%= related.image %>" alt="<%= related.title %>" class="img-fluid rounded" style="width: 80px; height: 80px; object-fit: cover;">
+                    </a>
+                  <% } else { %>
+                    <a href="/tin-tuc/<%= related.slug %>" class="me-3">
+                      <div class="bg-light rounded d-flex justify-content-center align-items-center" style="width: 80px; height: 80px;">
+                        <i class="bi bi-image text-secondary"></i>
+                      </div>
+                    </a>
+                  <% } %>
+                  <div>
+                    <h6 class="mb-1"><a href="/tin-tuc/<%= related.slug %>" class="text-decoration-none text-dark"><%= related.title %></a></h6>
+                    <small class="text-muted">
+                      <i class="bi bi-calendar-date"></i> 
+                      <%= new Date(related.published_at || related.created_at).toLocaleDateString('vi-VN') %>
+                    </small>
+                  </div>
+                </div>
+              <% }); %>
+            <% } else { %>
+              <p class="text-muted">Không có tin tức liên quan.</p>
+            <% } %>
+            
+            <div class="mt-3">
+              <a href="/tin-tuc" class="btn btn-sm btn-outline-primary">Xem tất cả tin tức</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<%- include('../partials/footer') %> 

@@ -1,0 +1,257 @@
+<%- include('../../../partials/header-admin') %>
+
+<div class="container-fluid">
+  <div class="row">
+    <!-- Sidebar -->
+    <div class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
+      <%- include('../../../partials/admin-sidebar') %>
+    </div>
+
+    <!-- Main content -->
+    <div class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+      <div class="d-flex justify-content-between align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1 class="h2">Quản lý sản phẩm</h1>
+        <a href="/admin/products/new" class="btn btn-primary">
+          <i class="bi bi-plus-circle"></i> Thêm sản phẩm mới
+        </a>
+      </div>
+
+      <!-- Search and Filter Form -->
+      <div class="card mb-4">
+        <div class="card-body">
+          <form method="GET" action="/admin/products">
+            <div class="row align-items-end">
+              <!-- Search input -->
+              <div class="col-lg-4 col-md-6 col-sm-12 mb-2">
+                <label for="searchProduct" class="form-label text-muted small">Tìm kiếm sản phẩm</label>
+                <div class="input-group">
+                  <input type="text" class="form-control" id="searchProduct" name="search" 
+                    placeholder="Nhập tên hoặc mô tả sản phẩm..." 
+                    value="<%= locals.pagination && pagination.search ? pagination.search : '' %>">
+                </div>
+              </div>
+              
+              <!-- Category filter -->
+              <div class="col-lg-4 col-md-6 col-sm-12 mb-2">
+                <label for="categoryFilter" class="form-label text-muted small">Danh mục</label>
+                <select class="form-select" id="categoryFilter" name="category_id">
+                  <option value="">Tất cả danh mục</option>
+                  <% if (categories && categories.length > 0) { %>
+                    <% categories.forEach(category => { %>
+                      <option value="<%= category.id %>" <%= locals.pagination && pagination.category_id == category.id ? 'selected' : '' %>>
+                        <%= category.name %>
+                      </option>
+                    <% }) %>
+                  <% } %>
+                </select>
+              </div>
+              
+              <!-- Items per page -->
+              <div class="col-lg-3 col-md-6 col-sm-8 mb-2">
+                <label for="limitItems" class="form-label text-muted small">Hiển thị trên mỗi trang</label>
+                <select class="form-select" id="limitItems" name="limit">
+                  <option value="10" <%= locals.pagination && pagination.limit == 10 ? 'selected' : '' %>>10 mục</option>
+                  <option value="25" <%= locals.pagination && pagination.limit == 25 ? 'selected' : '' %>>25 mục</option>
+                  <option value="50" <%= locals.pagination && pagination.limit == 50 ? 'selected' : '' %>>50 mục</option>
+                  <option value="100" <%= locals.pagination && pagination.limit == 100 ? 'selected' : '' %>>100 mục</option>
+                </select>
+              </div>
+              
+              <!-- Filter button -->
+              <div class="col-lg-1 col-md-6 col-sm-4 mb-2">
+              <button class="btn btn-primary" type="submit">
+                <i class="bi bi-search"></i>
+              </button>
+            </div>
+            <!-- Active filters display -->
+            <% if ((locals.pagination && pagination.search) || 
+                   (locals.pagination && pagination.category_id)) { %>
+              <div class="d-flex mt-3 flex-wrap gap-2 admin-filter">
+                <div class="text-muted small me-2 mt-1">Bộ lọc đang áp dụng:</div>
+                
+                <% if (locals.pagination && pagination.search) { %>
+                  <a href="<%= `/admin/products?page=1&limit=${locals.pagination ? pagination.limit : 10}${locals.pagination && pagination.category_id ? `&category_id=${pagination.category_id}` : ''}` %>" 
+                    class="badge bg-light text-dark text-decoration-none py-2 px-3 d-inline-flex align-items-center">
+                    <span class="me-1">Từ khóa: <%= pagination.search %></span>
+                    <i class="bi bi-x-circle"></i>
+                  </a>
+                <% } %>
+                
+                <% if (locals.pagination && pagination.category_id) { %>
+                  <% const selectedCategory = categories.find(cat => cat.id == pagination.category_id); %>
+                  <% if (selectedCategory) { %>
+                    <a href="<%= `/admin/products?page=1&limit=${locals.pagination ? pagination.limit : 10}${locals.pagination && pagination.search ? `&search=${pagination.search}` : ''}` %>" 
+                      class="badge bg-light text-dark text-decoration-none py-2 px-3 d-inline-flex align-items-center">
+                      <span class="me-1">Danh mục: <%= selectedCategory.name %></span>
+                      <i class="bi bi-x-circle"></i>
+                    </a>
+                  <% } %>
+                <% } %>
+                
+                <a href="/admin/products" class="badge bg-secondary text-white text-decoration-none py-2 px-3">
+                  <i class="bi bi-x-circle me-1"></i> Xóa tất cả bộ lọc
+                </a>
+              </div>
+            <% } %>
+          </form>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Hình ảnh</th>
+                  <th>Tên sản phẩm</th>
+                  <th>Danh mục</th>
+                  <th>Giá</th>
+                  <th>Tồn kho</th>
+                  <th>Trạng thái</th>
+                  <th>Thao tác</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% if (products && products.length > 0) { %>
+                  <% products.forEach(product => { %>
+                    <tr>
+                      <td><%= product.id %></td>
+                      <td>
+                        <img src="<%= product.thumbnail_url || product.image_url %>" alt="<%= product.name %>" width="50" height="50" class="img-thumbnail">
+                      </td>
+                      <td><%= product.name %></td>
+                      <td>
+                        <% const category = categories.find(cat => cat.id === product.category_id); %>
+                        <%= category ? category.name : 'Không có danh mục' %>
+                      </td>
+                      <td><%= new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(product.price) %></td>
+                      <td><%= product.stock_quantity %></td>
+                      <td>
+                        <% if (product.is_available) { %>
+                          <span class="badge bg-success">Đang bán</span>
+                        <% } else { %>
+                          <span class="badge bg-danger">Ngừng bán</span>
+                        <% } %>
+                      </td>
+                      <td>
+                        <div class="btn-group">
+                          <a href="/admin/products/<%= product.id %>/edit" class="btn btn-sm btn-warning">
+                            <i class="bi bi-pencil"></i> Sửa
+                          </a>
+                          <button class="btn btn-sm btn-danger delete-product" data-id="<%= product.id %>" data-name="<%= product.name %>">
+                            <i class="bi bi-trash"></i> Xóa
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  <% }) %>
+                <% } else { %>
+                  <tr>
+                    <td colspan="8" class="text-center">Không có sản phẩm nào</td>
+                  </tr>
+                <% } %>
+              </tbody>
+            </table>
+          </div>
+          
+          <!-- Pagination -->
+          <% if (locals.pagination && pagination.totalPages > 0) { %>
+            <div class="mt-4 d-flex justify-content-between align-items-center">
+              <div>
+                Hiển thị <strong><%= products.length %></strong> trên tổng số <strong><%= pagination.totalProducts %></strong> sản phẩm
+              </div>
+              
+              <nav aria-label="Product pagination">
+                <ul class="pagination">
+                  <!-- Previous page -->
+                  <li class="page-item <%= pagination.page <= 1 ? 'disabled' : '' %>">
+                    <a class="page-link" href="<%= pagination.page <= 1 ? '#' : `/admin/products?page=${pagination.page - 1}&limit=${pagination.limit}&search=${pagination.search || ''}&category_id=${pagination.category_id || ''}` %>">
+                      <i class="bi bi-chevron-left"></i>
+                    </a>
+                  </li>
+                  
+                  <!-- Page numbers -->
+                  <% 
+                    let startPage = Math.max(1, pagination.page - 2);
+                    let endPage = Math.min(pagination.totalPages, pagination.page + 2);
+                    
+                    // Ensure we always show 5 pages if possible
+                    if (endPage - startPage < 4 && pagination.totalPages > 4) {
+                      if (startPage === 1) {
+                        endPage = Math.min(startPage + 4, pagination.totalPages);
+                      } else {
+                        startPage = Math.max(endPage - 4, 1);
+                      }
+                    }
+                  %>
+                  
+                  <% for(let i = startPage; i <= endPage; i++) { %>
+                    <li class="page-item <%= pagination.page === i ? 'active' : '' %>">
+                      <a class="page-link" href="/admin/products?page=<%= i %>&limit=<%= pagination.limit %>&search=<%= pagination.search || '' %>&category_id=<%= pagination.category_id || '' %>">
+                        <%= i %>
+                      </a>
+                    </li>
+                  <% } %>
+                  
+                  <!-- Next page -->
+                  <li class="page-item <%= pagination.page >= pagination.totalPages ? 'disabled' : '' %>">
+                    <a class="page-link" href="<%= pagination.page >= pagination.totalPages ? '#' : `/admin/products?page=${pagination.page + 1}&limit=${pagination.limit}&search=${pagination.search || ''}&category_id=${pagination.category_id || ''}` %>">
+                      <i class="bi bi-chevron-right"></i>
+                    </a>
+                  </li>
+                </ul>
+              </nav>
+            </div>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal xác nhận xóa -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deleteModalLabel">Xác nhận xóa</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        Bạn có chắc chắn muốn xóa sản phẩm "<span id="productName"></span>"?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+        <form id="deleteForm" method="POST">
+          <input type="hidden" name="_method" value="DELETE">
+          <button type="submit" class="btn btn-danger">Xóa</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const deleteButtons = document.querySelectorAll('.delete-product');
+    const deleteForm = document.getElementById('deleteForm');
+    const productNameSpan = document.getElementById('productName');
+    
+    deleteButtons.forEach(button => {
+      button.addEventListener('click', function() {
+        const productId = this.getAttribute('data-id');
+        const productName = this.getAttribute('data-name');
+        
+        productNameSpan.textContent = productName;
+        deleteForm.action = `/admin/products/${productId}`;
+        
+        const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+        deleteModal.show();
+      });
+    });
+  });
+</script>
+
+<%- include('../../../partials/footer-admin') %>

@@ -1,0 +1,55 @@
+<%- include('../partials/header') %>
+
+<div class="container py-5">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="/categories">Danh mục</a></li>
+      <li class="breadcrumb-item active" aria-current="page"><%= category.name %></li>
+    </ol>
+  </nav>
+
+  <h1 class="mb-4"><%= category.name %></h1>
+  <p class="text-muted mb-5"><%= category.description %></p>
+
+  <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+    <% products.forEach(product => { %>
+      <div class="col">
+        <div class="card h-100 shadow-sm">
+          <img src="<%= product.image_url %>" class="card-img-top" alt="<%= product.name %>">
+          <div class="card-body">
+            <h5 class="card-title"><%= product.name %></h5>
+            <p class="card-text text-muted"><%= product.description %></p>
+            <p class="card-text">
+              <strong class="text-primary"><%= new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(product.price) %></strong>
+            </p>
+            <div class="d-flex justify-content-between align-items-center">
+              <button class="btn btn-primary add-to-cart" data-product-id="<%= product.id %>">
+                Thêm vào giỏ hàng
+              </button>
+              <% if (locals.user && user.role === 'admin') { %>
+                <div class="btn-group">
+                  <a href="/admin/products/<%= product.id %>/edit" class="btn btn-sm btn-outline-secondary">
+                    <i class="bi bi-pencil"></i>
+                  </a>
+                  <form action="/admin/products/<%= product.id %>/delete" method="POST" class="d-inline">
+                    <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Bạn có chắc chắn muốn xóa sản phẩm này?')">
+                      <i class="bi bi-trash"></i>
+                    </button>
+                  </form>
+                </div>
+              <% } %>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% }); %>
+  </div>
+
+  <% if (products.length === 0) { %>
+    <div class="text-center py-5">
+      <p class="text-muted">Chưa có sản phẩm nào trong danh mục này.</p>
+    </div>
+  <% } %>
+</div>
+
+<%- include('../partials/footer') %> 

@@ -1,0 +1,73 @@
+<%- include('../../../partials/header-admin') %>
+
+<div class="container-fluid">
+  <div class="row">
+    <!-- Sidebar -->
+    <div class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
+      <%- include('../../../partials/admin-sidebar') %>
+    </div>
+
+    <!-- Main content -->
+    <div class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+      <div class="d-flex justify-content-between align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1 class="h2">Quản lý người dùng</h1>
+      </div>
+
+      <div class="card">
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Họ tên</th>
+                  <th>Email</th>
+                  <th>Tài khoản</th>
+                  <th>Quyền</th>
+                  <th>Ngày tạo</th>
+                  <th>Thao tác</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% if (users && users.length > 0) { %>
+                  <% users.forEach(user => { %>
+                    <tr>
+                      <td><%= user.id %></td>
+                      <td><%= user.full_name %></td>
+                      <td><%= user.email %></td>
+                      <td><%= user.username %></td>
+                      <td>
+                        <% if (user.role === 'admin') { %>
+                          <span class="badge bg-danger">Admin</span>
+                        <% } else { %>
+                          <span class="badge bg-info">Người dùng</span>
+                        <% } %>
+                      </td>
+                      <td><%= new Date(user.created_at).toLocaleDateString('vi-VN') %></td>
+                      <td>
+                        <div class="btn-group">
+                          <a href="/admin/users/<%= user.id %>" class="btn btn-sm btn-info">
+                            <i class="bi bi-eye"></i> Xem
+                          </a>
+                          <a href="/admin/users/<%= user.id %>/edit" class="btn btn-sm btn-warning">
+                            <i class="bi bi-pencil"></i> Sửa
+                          </a>
+                        </div>
+                      </td>
+                    </tr>
+                  <% }) %>
+                <% } else { %>
+                  <tr>
+                    <td colspan="7" class="text-center">Không có người dùng nào</td>
+                  </tr>
+                <% } %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('../../../partials/footer-admin') %>
