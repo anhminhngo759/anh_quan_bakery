@@ -187,55 +187,54 @@ const queryPayment = async (orderId: string, requestId: string): Promise<MomoCal
 /**
  * Process a refund
  */
-const refundPayment = async (
-  orderId: string,
-  transId: string,
-  amount: number,
-  description: string
-): Promise<MomoCallbackResponse> => {
-  try {
-    const requestId = uuidv4();
-    const payload = {
-      partnerCode: momoConfig.partnerCode,
-      accessKey: momoConfig.accessKey,
-      requestId,
-      amount,
-      orderId: `refund_${orderId}_${requestId}`,
-      transId,
-      description
-    };
+// const refundPayment = async (
+//   orderId: string,
+//   transId: string,
+//   amount: number,
+//   description: string
+// ): Promise<MomoCallbackResponse> => {
+//   try {
+//     const requestId = uuidv4();
+//     const payload = {
+//       partnerCode: momoConfig.partnerCode,
+//       accessKey: momoConfig.accessKey,
+//       requestId,
+//       amount,
+//       orderId: `refund_${orderId}_${requestId}`,
+//       transId,
+//       description
+//     };
 
-    // Add signature
-    const signature = generateSignature(payload);
+//     // Add signature
+//     const signature = generateSignature(payload);
 
-    // Send request to MoMo
-    const response = await axios.post<MomoCallbackResponse>(
-      `${momoConfig.apiUrl}${momoConfig.endpoints.refund}`,
-      {
-        ...payload,
-        signature
-      },
-      {
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      }
-    );
+//     // Send request to MoMo
+//     const response = await axios.post<MomoCallbackResponse>(
+//       `${momoConfig.apiUrl}${momoConfig.endpoints.refund}`,
+//       {
+//         ...payload,
+//         signature
+//       },
+//       {
+//         headers: {
+//           'Content-Type': 'application/json'
+//         }
+//       }
+//     );
 
-    return response.data;
-  } catch (error) {
-    if (axios.isAxiosError(error)) {
-      console.error('MoMo API Error:', error.response?.data || error.message);
-      throw new Error(`MoMo API Error: ${error.message}`);
-    }
-    console.error('MoMo Service Error:', error);
-    throw new Error('Failed to process MoMo refund');
-  }
-};
+//     return response.data;
+//   } catch (error) {
+//     if (axios.isAxiosError(error)) {
+//       console.error('MoMo API Error:', error.response?.data || error.message);
+//       throw new Error(`MoMo API Error: ${error.message}`);
+//     }
+//     console.error('MoMo Service Error:', error);
+//     throw new Error('Failed to process MoMo refund');
+//   }
+// };
 
 export default {
   createPayment,
   verifyCallback,
-  queryPayment,
-  refundPayment
+  queryPayment
 }; 

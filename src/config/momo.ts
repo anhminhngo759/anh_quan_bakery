@@ -22,8 +22,8 @@ const momoConfig: MomoConfig = {
   endpoints: {
     create: '/v2/gateway/api/create',
     confirm: '/v2/gateway/api/confirm',
-    query: '/v2/gateway/api/query',
-    refund: '/v2/gateway/api/refund'
+    query: '/v2/gateway/api/query'
+    // refund: '/v2/gateway/api/refund'
   }
 };
 

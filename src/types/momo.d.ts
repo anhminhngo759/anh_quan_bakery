@@ -2,7 +2,7 @@ export interface MomoEndpoints {
   create: string;
   confirm: string;
   query: string;
-  refund: string;
+  // refund: string;
 }
 
 export interface MomoConfig {
